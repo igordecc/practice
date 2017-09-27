@@ -1,0 +1,13 @@
+import numpy
+
+file = open('determination.text')
+n = file.readline()
+comarray = np.zeros(2,n)
+for i in range(n):
+	(comarray[0,i], comarray[1,i]) = split(readline(), ' ')
+	comarray[0,i] = int(comarray[0,i])
+
+while 1
+	commandkey = readline(">")
+	string = setvalue(comarray, commandkey)
+	command = exec(string) 

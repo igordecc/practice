@@ -1,0 +1,4 @@
+file = open("/home/inviz/Documents/Virtual M/Virtual M try3/CODE")
+
+
+file.close()

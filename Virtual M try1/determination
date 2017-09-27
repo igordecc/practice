@@ -1,0 +1,10 @@
+8
+000 none
+001 remeber int
+010 delete int
+011 move 1bit->
+100 movee <-1 bit
+101 print
+110 none
+111 none
+

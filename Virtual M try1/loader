@@ -1,0 +1,9 @@
+import numpy as np
+
+file = open('determination.text')
+
+a = np.zeros(0)
+try a.append(file.readline())
+except break
+
+close('determination.text')
