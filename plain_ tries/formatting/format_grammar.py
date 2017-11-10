@@ -46,4 +46,34 @@ binary: {binary:x}  {binary:X}
 
 print("""
 number ('n' formatting)
-decimal: {decimal:n}""".format(decimal=123455678))
+decimal: {decimal:n}
+""".format(decimal=123455678))
+
+
+#
+print("------strint presentation types-------")
+print("""string default formating {string:s}
+""".format(string='user_string_here'))
+print("""None string format {Nonee:} 
+(analogical to string foramt)
+""".format(Nonee="user_string_here"))
+
+print("-----floating point and decimal presentation types-----")
+print("""
+Exponent notation   {eexp:e}
+Exponent notation with uppercase   {upperexp:E}
+Fixed point notation {fixpoint:f}
+Fixed point uppercase {upperfixpoint:F}
+General format {general:g}
+General format uppercase {uppergeneral:G}
+Number (general with separator characters) {numb:n}
+None {Nonee:}
+""".format(eexp=1234654657787887.41242,
+           upperexp=1234654657787887.41242,
+           fixpoint=1234654657787887.41242,
+           upperfixpoint=1234654657787887.41242,
+           general=1234654657787887.41242,
+           uppergeneral=1234654657787887.41242,
+           numb=1234654657787887.41242,
+           Nonee=1234654657787887.41242
+           ))
