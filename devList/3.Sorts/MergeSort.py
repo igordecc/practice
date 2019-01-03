@@ -27,12 +27,9 @@ def merge(list1, list2):
     return mergedList
 
 
-
-
-
-if __name__ == '__main__':
-    listt0 = [1,2,3,4,5,6,7,887,8878,9878,5,4,54,6,45,7,787,444,55,4]
-    listt = [[i,] for i in listt0]
+def mergeSort(unsortedList):
+    listt = unsortedList
+    listt = [[i, ] for i in listt0]
     import math
 
     newlist = listt
@@ -40,15 +37,19 @@ if __name__ == '__main__':
     for j in range(int(math.log(lenlistt, 2))):
         listt = newlist
         newlist = []
-        print(listt)
-        for i in zip(*[iter(listt)]*2):
+        for i in zip(*[iter(listt)] * 2):
             newlist.append(merge(*i))
         if len(listt) % 2 != 0:
-            newlist.append(merge(newlist.pop(-1),listt[-1]))
-        print(newlist)
+            newlist.append(merge(newlist.pop(-1), listt[-1]))
     newlist = newlist[0]
-    print(newlist)
 
     for i in newlist:
         assert i in listt0
 
+    sortedList = newlist
+    return sortedList
+
+
+if __name__ == '__main__':
+    listt0 = [1,2,3,4,5,6,7,887,8878,9878,5,4,54,6,45,7,787,444,55,4]
+    print(mergeSort(listt0))
