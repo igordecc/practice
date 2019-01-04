@@ -87,4 +87,4 @@ if __name__ == '__main__':
     # theBHeap.print()
     assert all(el1 == el2 for el1, el2 in zip(sorted(theBHeap.itemArray[::], reverse=True), theBHeap.sort())), "ti ne prav"
     #theBHeap = bHeap([2, 1112, 445, 25, 78, 1234, 54])
-    #theBHeap.print()
+    theBHeap.print()
