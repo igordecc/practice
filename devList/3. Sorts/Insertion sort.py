@@ -6,7 +6,6 @@ def insertionSort(unsortedList):
     while i <lenlist:
         j = i
         while (j>0) and (listt[j-1] > listt[j]):
-            print(listt[j-1], listt[j], "+")
             listt[j], listt[j-1] = listt[j-1], listt[j]
             j -=1
         i += 1
