@@ -55,10 +55,11 @@ def parse_and_do(_string: str):
 
 
 if __name__ == '__main__':
-
     _string = ""
+
     print("calculator greeting")
     print("enter numbers and operations")
+
     while _string != "stop":
         _string = input("do: ")
         result = parse_and_do(_string)
