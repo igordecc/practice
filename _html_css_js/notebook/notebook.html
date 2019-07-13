@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>txt_notebook</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <style>
         .dropbtn {
-            background-color: aliceblue;
+            background-color: darkblue;
             color: white;
             padding: 16px;
             font-size: 16px;
@@ -13,7 +13,7 @@
         }
 
         .dropdown {
-            position:relative;
+            position: relative;
             display: inline-block;
         }
 
@@ -22,15 +22,25 @@
             position: absolute;
             background-color: #f1f1f1;
             min-width: 160px;
+            /*max-width: 160px;*/
             z-index: 1;
         }
 
         .dropdown-content a {
-            display:block;
+            display: block;
             padding: 12px 16px;
+            color: black;
             text-decoration: none;
 
         }
+        input {
+            /*padding: 0px 0px;*/
+            position: fixed;
+            left: 10px;
+            max-width: 160px;
+            opacity: 0;
+        }
+
         .dropdown:hover .dropbtn {background-color: #3e8e41;}
 
         .dropdown:hover .dropdown-content {display: block;}
@@ -56,33 +66,78 @@
             top: 50px;
             bottom: 50px;
         }
+
+
     </style>
+
 </head>
 <body>
-
-
 <section>
     <header>
         <div class="dropdown">
             <button class="dropbtn">File</button>
             <div class="dropdown-content">
-                <a href="#">Save</a>
-                <a href="#">Save as</a>
-                <a href="#">Open</a>
+                <a href="javascript:saveFunc();">Save</a>
+                <script src="FileSaver.js"></script>
+                <script>
+                    function saveFunc() {
+                        var text_from_textarea = document.getElementById("mainText").value;
+                        saveAs( data2blob(text_from_textarea), "new.txt" )
+                    }
+
+                    function data2blob(data, isBase64) {
+                        var chars = "";
+
+                        if (isBase64)
+                            chars = atob(data);
+                        else
+                            chars = data;
+
+                        var bytes = new Array(chars.length);
+                        for (var i=0; i < chars.length; i++) {
+                            bytes[i] = chars.charCodeAt(i);
+                        }
+                        var blob = new Blob([new Uint8Array(bytes)]);
+                        return blob;
+                    }
+                </script>
+                <input type="file" id="input_txt" oninput="input_to_textfield()">
+                <script src="FileReader.js"></script>
+                <script>
+                    function input_to_textfield() {
+                        // var _text = document.getElementById("input_txt").value;
+                        // var _text = download(document.getElementById("input_txt").value);
+
+                        var file =  document.querySelector("input[type=file]").files[0];
+                        var reader = new FileReader();
+
+
+                        reader.onloadend = function(TheFile) {
+                            TheFile.target.result.enco = "utf-8";
+                            document.getElementById("mainText").value = TheFile.target.result;
+                        };
+                        if (file) {
+                            reader.readAsText(file, "utf-8")
+                        } else {}
+                    }
+                </script>
+
+                <a href="#">Upload and open</a>
+                <a href="#">Bob, do something!</a>
             </div>
         </div>
     </header>
     <article>
         <legend>Write text here</legend>
-        <textarea></textarea>
+        <textarea id="mainText"></textarea>
+
     </article>
-    <footer>Simple text editor</footer>
+    <footer>Simple text editor<br>
+    <button type="button" onclick="saveFunc()">Save</button></footer>
 </section>
 
 <!--
-add menu
-add save (into computer) -> as txt
-add open (from computer) -> as txt
+TODO: add encoding utf-8
 -->
 </body>
 </html>
