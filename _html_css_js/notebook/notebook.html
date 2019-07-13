@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>txt_notebook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .dropbtn {
+            background-color: aliceblue;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+        }
+
+        .dropdown {
+            position:relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            display:block;
+            padding: 12px 16px;
+            text-decoration: none;
+
+        }
+        .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+        .dropdown:hover .dropdown-content {display: block;}
+
+        textarea {
+            /*position: relative;*/
+            /*nani? imposing in progress*/
+            width: 100%;
+            min-height: 100%;
+            max-height: 100%;
+        }
+
+    /*    here goes page imposing*/
+
+        header, footer, article {
+            position: absolute;
+            width: 99%;
+        }
+
+        header { top: 0px; }
+        footer { bottom: 0px; }
+        article {
+            top: 50px;
+            bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+
+
+<section>
+    <header>
+        <div class="dropdown">
+            <button class="dropbtn">File</button>
+            <div class="dropdown-content">
+                <a href="#">Save</a>
+                <a href="#">Save as</a>
+                <a href="#">Open</a>
+            </div>
+        </div>
+    </header>
+    <article>
+        <legend>Write text here</legend>
+        <textarea></textarea>
+    </article>
+    <footer>Simple text editor</footer>
+</section>
+
+<!--
+add menu
+add save (into computer) -> as txt
+add open (from computer) -> as txt
+-->
+</body>
+</html>
