@@ -2,7 +2,7 @@ import random
 
 
 def makeRndString(charset:set,
-                  length:int=200):
+                  length:int=400):
     """
     get string with character generated from set randomly
     :param charset: set of characters
@@ -15,6 +15,6 @@ def makeRndString(charset:set,
     return result
 
 if __name__ == '__main__':
-    charset = set("12 345 6789 ")
+    charset = set("12 345 678 90 ")
     result_str = makeRndString(charset)
     print(result_str)
