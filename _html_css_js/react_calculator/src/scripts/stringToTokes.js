@@ -59,6 +59,7 @@ function compileRPN(_string){
 function myParser(_string){
     /*
     * return list of tokens, which are (!) string type (!)
+    * ALWAYS USE TRY-CATCH on myParser
     * */
     var stack = [];
 
@@ -67,6 +68,16 @@ function myParser(_string){
     var e_trigger = 0;
     var dot_trigger = 0;
     var operation_type_trigger = "u"; // u - unary, b - binary
+
+    function pushNumTokenAndResetTriggers() {
+        if (token_num_buffer[0]) { // because we need to avoid empty stack tokens, which are if (token_num_buffer[0] === null)
+            let complete_token = token_num_buffer.join("");
+            stack.push(complete_token);
+        }
+        e_trigger = 0;
+        dot_trigger = 0;
+        token_num_buffer = [];
+    }
 
     for (let i=0; i < _string.length; i++) {
         let character = _string[i];
@@ -78,48 +89,49 @@ function myParser(_string){
                 e_trigger = 1;
                 operation_type_trigger = "e";
                 token_num_buffer.push(_string[i]);
-            } // else raise exception "expresion error: double e"
+            } else throw "expresion error: double e";
         } else if ( ("." === _string[i])||("," === _string[i]) ) { // this is number's float dot check
             if (dot_trigger === 0) {
                 dot_trigger = 1;
                 token_num_buffer.push(_string[i])
-            } // else raise exception: "expresion error: double dot (.)"
+            } else throw "expresion error: double dot (.)";
         } else if (("+" === _string[i])||("-" === _string[i])) { // this is check for the unary sign after e or unary sign before the number
-            if ( (operation_type_trigger === "u")||(operation_type_trigger === "e") ){
+            if ((operation_type_trigger === "u") || (operation_type_trigger === "e")) {
                 operation_type_trigger = "b";
                 token_num_buffer.push(_string[i])
             } else if (operation_type_trigger === "b") {
                 // push to stack and reset token buffer;
-                let complete_token = token_num_buffer.join("");
-                stack.push(complete_token);
-                e_trigger = 0;
-                dot_trigger = 0;
-                token_num_buffer = [];
+                pushNumTokenAndResetTriggers();
                 stack.push(_string[i])
             }
-            } else if ((_string[i] === "*")||
-                    (_string[i] === "/")||
-                    (_string[i] === "^"))
-            { //simple operation identifier
-                let complete_token = token_num_buffer.join("");
-                stack.push(complete_token);
-                e_trigger = 0;
-                dot_trigger = 0;
-                token_num_buffer = [];
-                stack.push(_string[i])
+        } else if (_string[i] === "(" || _string[i] === ")")   {
+            pushNumTokenAndResetTriggers();
+            stack.push(_string[i]);
+            if (_string[i] === "(") {
+                operation_type_trigger = "u";
             }
+        } else if ((_string[i] === "*")||
+                (_string[i] === "/")||
+                (_string[i] === "^"))
+        { //simple operation identifier
+            pushNumTokenAndResetTriggers();
+            stack.push(_string[i]);
+        }
     }
-    let complete_token = token_num_buffer.join("");
-    stack.push(complete_token);
-    e_trigger = 0;
-    dot_trigger = 0;
-    token_num_buffer = [];
+    pushNumTokenAndResetTriggers();
+    // TODO catch braces, not close braces, ending operators
+    // TODO lets return nut just stack, but stack divided  to numbers, operators and functions (unary operators).
+    // Note lets not add multi-argument functions
     return stack;
 }
 
 
-var _str = "+87 + 895e+40 + 89895 * 859859.0999e-10 ";
+var _str = "+87 ++++ (-895e+40 + 89895 * 859859.0999e-10) ";
+try {
+    console.log(myParser(_str));
+}
+catch(e) {
+    console.log(e)
+}
 
-console.log(myParser(_str));
-
-// export default toReversePolishNotation;
+// export default toReversePolishNotation;++++++++++++++++
