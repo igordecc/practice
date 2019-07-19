@@ -1,6 +1,6 @@
 // import React, { Component } from 'react';
 
-function compileRPN(tokenRPNstring){
+function evaluateRPN(tokenRPNstring){
     var operatorStack = [];
     var operandStack = [];
     var pendingOperandTrigger = 0;
@@ -131,12 +131,11 @@ function myParser(_string){
         }
     }
     pushNumTokenAndResetTriggers();
-    // TODO catch not close braces, ending operators INSIDE reverse poland notation
-    // TODO lets return nut just stack, but stack divided  to numbers, operators and functions (unary operators).
+    // TODO catch  unclosed parenthesis and left-operators INSIDE reverse poland notation
     // Note lets not add multi-argument functions
+    // TODO add ** power operator
     return stack;
 }
-
 
 function tokensToPolishNotation(tokenStack) {
 
@@ -210,7 +209,7 @@ try {
     console.log(infix);
     var postfix = tokensToPolishNotation(infix);
     console.log(postfix);
-    console.log(compileRPN(postfix));
+    console.log(evaluateRPN(postfix));
 }
 catch(e) {
     console.log(e)
