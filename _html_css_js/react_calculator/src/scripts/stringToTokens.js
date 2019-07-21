@@ -49,7 +49,7 @@ function evaluateRPN(tokenRPNstring){
         pendingOperandTrigger = 1;
         }
     }
-    return "done: "+operandStack
+    return operandStack
 }
 
 function myParser(_string){
@@ -203,15 +203,20 @@ function tokensToPolishNotation(tokenStack) {
     return queue;
 }
 
-var _str = "+87 ++++ (-895e+40 + 89895^2 * 859859.0999e-10) ";
+// var _str = "+87 ++++ (-895e+40 + 89895^2 * 859859.0999e-10) ";
+var _str = "87+7 ";
 try {
-    var infix = myParser(_str);
-    console.log(infix);
-    var postfix = tokensToPolishNotation(infix);
-    console.log(postfix);
-    console.log(evaluateRPN(postfix));
-}
+        var infix = myParser(_str);
+        console.log(infix);
+        var postfix = tokensToPolishNotation(infix);
+        console.log(postfix);
+        console.log(evaluateRPN(postfix));
+    }
 catch(e) {
-    console.log(e)
+        console.log(e);
 }
-// export default toReversePolishNotation;++++++++++++++++
+
+// TODO debug myparser  - simple test "87+7" failed
+// TODO Debug RPN  - simple test "87*7" failed too
+// TODO - lets write tests!
+ // export default calculateString;

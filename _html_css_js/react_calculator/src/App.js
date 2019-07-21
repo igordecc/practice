@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import ResultComponent from './components/ResultComponent';
 import KeyPadComponent from './components/KeyPadComponent';
+
+import calculateString from './scripts/stringToTokens';
+
 
 class App extends Component {
     constructor(){
@@ -34,9 +37,10 @@ class App extends Component {
     
     calculate = () => {
       try {
+        console.log(this.state.result)
         this.setState({
           // eslint-disable-next-line
-          result: (eval(this.state.result) || "") + ""
+          result: (calculateString(this.state.result))
         })
       } catch (e) {
         this.setState({
