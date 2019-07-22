@@ -216,6 +216,21 @@ catch(e) {
         console.log(e);
 }
 
+
+function calculateString(_string) {
+    try {
+        var infix = myParser(_string);
+        var postfix = tokensToPolishNotation(infix);
+        var result = evaluateRPN(postfix);
+        return result
+    }
+    catch(e) {
+        console.log(e);
+    }
+}
+
+export default calculateString
+
 // TODO debug myparser  - simple test "87+7" failed
 // TODO Debug RPN  - simple test "87*7" failed too
 // TODO - lets write tests!
