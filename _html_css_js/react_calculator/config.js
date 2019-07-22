@@ -1,3 +1,6 @@
+//to run all applications type in console
+//node config.js
+
 require('babel-register')({
     presets: [ 'env' ]
 })
