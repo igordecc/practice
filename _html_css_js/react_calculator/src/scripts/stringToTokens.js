@@ -204,24 +204,24 @@ function tokensToPolishNotation(tokenStack) {
 }
 
 // var _str = "+87 ++++ (-895e+40 + 89895^2 * 859859.0999e-10) ";
-var _str = "87+7 ";
-try {
-        var infix = myParser(_str);
-        console.log(infix);
-        var postfix = tokensToPolishNotation(infix);
-        console.log(postfix);
-        console.log(evaluateRPN(postfix));
-    }
-catch(e) {
-        console.log(e);
-}
+// // var _str = "87+7 ";
+// try {
+//         var infix = myParser(_str);
+//         console.log(infix);
+//         var postfix = tokensToPolishNotation(infix);
+//         console.log(postfix);
+//         console.log(evaluateRPN(postfix)[0]);
+//     }
+// catch(e) {
+//         console.log(e);
+// }
 
 
 function calculateString(_string) {
     try {
         var infix = myParser(_string);
         var postfix = tokensToPolishNotation(infix);
-        var result = evaluateRPN(postfix);
+        var result = evaluateRPN(postfix)[0];
         return result
     }
     catch(e) {
@@ -229,7 +229,7 @@ function calculateString(_string) {
     }
 }
 
-export default calculateString
+export default calculateString;
 
 // TODO debug myparser  - simple test "87+7" failed
 // TODO Debug RPN  - simple test "87*7" failed too

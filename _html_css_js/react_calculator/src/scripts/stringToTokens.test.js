@@ -12,7 +12,7 @@ import calculateString from "./stringToTokens";
 
 var assert = chai.assert();
 
-var testFunction = calculateString
+var testFunction = calculateString;
 assert.equal(testFunction("5+9"), "14")
 
 
