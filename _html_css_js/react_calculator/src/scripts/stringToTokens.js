@@ -1,9 +1,9 @@
 // import React, { Component } from 'react';
-// TODO rewrite myParser with a new more objected conception
+// TODO rewrite parseToTokenQueue with a new more objected conception
 function myParser(_string){
     /*
     * return list of tokens, which are (!) string type (!)
-    * ALWAYS USE TRY-CATCH on myParser
+    * ALWAYS USE TRY-CATCH on parseToTokenQueue
     *
     * tokenStack[0] - token by itself
     * tokenStack[1] index legend:
@@ -221,7 +221,7 @@ function evaluateRPN(tokenRPNstring){
 // var _str = "+87 ++++ (-895e+40 + 89895^2 * 859859.0999e-10) ";
 // // var _str = "87+7 ";
 // try {
-//         var infix = myParser(_str);
+//         var infix = parseToTokenQueue(_str);
 //         console.log(infix);
 //         var postfix = tokensToPolishNotation(infix);
 //         console.log(postfix);
