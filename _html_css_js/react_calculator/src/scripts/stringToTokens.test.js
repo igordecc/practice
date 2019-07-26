@@ -46,4 +46,8 @@ it('calculate: multi addition ', () => {
 it('calculate: multi brackets ', () => {
     assert.equal(calculate("+87 ++++ (((-895e+40-10)*5) + (89895^2 * 859859.0999e-10)) "), "-8.95e+42");
 });
-
+var x = 2;
+var y = -3;
+it('calculate: x+y: 2 + -3 ', () => {
+    assert.equal(x+y, "-1");
+});
