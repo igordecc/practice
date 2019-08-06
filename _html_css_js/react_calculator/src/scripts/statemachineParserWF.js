@@ -40,7 +40,7 @@ var _function_stack = [];
 for (let i=0; i<_string.length; i++) {
     _state = change_state_from_character(_string[i], _state);
 
-    }
+
 };
 
 function do_from_state(_char, _state) {
@@ -54,4 +54,6 @@ function do_from_state(_char, _state) {
             break;
         default:
             throw 'ERROR STATE';
+
+    };
 };
