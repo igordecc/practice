@@ -8,7 +8,7 @@ class Renamer():
     def __init__(self, start_directory, ignore_files=[]):
         # silent initialisation
         self.start_directory = start_directory
-        self.ignore_files = [".git", ".idea", ".gitignore"]
+        self.ignore_files = [".git", ".idea", ".gitignore", "README", "LICENCE"]
         for file in ignore_files:
             self.ignore_files.append(file)
 
@@ -23,7 +23,7 @@ class Renamer():
     def print(self):
         for root, dirs, files in os.walk(self.start_directory):
             ckechlist = root.split("\\")
-            if self.check_dir(ckechlist)=="continue":
+            if self.check_dir(ckechlist)=="continue":    # skipp all ignored files
                 continue
             print(root, dirs, files)
 
@@ -35,17 +35,51 @@ class Renamer():
         return s
 
     def __call__(self, *args, **kwargs):
-        for root, dirs, files in os.walk(self.start_directory):
-            pass
+        def find_files():
+            files_to_rename = []
+            for root, dirs, files in os.walk(self.start_directory):
+                checklist = root.split("\\")
+                filename = checklist[-1]
+                if (self.check_dir(checklist) == "continue") or filename.isupper():     # skipp all ignored files and CAPSLOG files
+                    continue
+                files_to_rename.append(root)
+            return files_to_rename
+        files_to_rename = find_files()
+        print(files_to_rename)
+
+        for file in files_to_rename:
+            filename = file.split("\\")[-1]
+            newfilename = ""
+            previous_char = ""
+            for char in filename:
+                char = self.statemachine(previous_char, char)
+                previous_char = char
+                newfilename += char
+
+            dst = "\\".join(file.split("\\")[:-1]) + "\\" + newfilename
+            os.rename(file, dst)
+
+                # os.rename()
+
+
+    def statemachine(self, previous_char:str, char:str):
+        if previous_char.islower() and char.isupper():
+            return "_" + char.lower()
+        elif char.isupper():
+            return char.lower()
+        elif char == " ":
+            return "_"
+        return char
+
 
 
 if __name__ == '__main__':
     print("file renamer is running")
     # start_directory = input("enter absolute start path: ")
-    start_directory = "D:\work\Practice"
+    start_directory = r"D:\work\practice\virtual_M"
     renamer = Renamer(start_directory)
-    renamer.print()
-
+    # renamer.print()
+    renamer()
     renamer.status()
 
 # module - small_characters.py
