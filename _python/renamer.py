@@ -47,7 +47,36 @@ class Renamer():
         files_to_rename = find_files()
         print(files_to_rename)
 
-        for file in files_to_rename:
+        # NO
+        # [string,string,string,] -> [list, list,list]
+        # translate directories from string to list format
+
+        # for file in files_to_rename:
+        #     filename = file.split("\\")[-1]
+        #     newfilename = ""
+        #     previous_char = ""
+        #     for char in filename:
+        #         char = self.statemachine(previous_char, char)
+        #         previous_char = char
+        #         newfilename += char
+        #
+        #     dst = "\\".join(file.split("\\")[:-1]) + "\\" + newfilename # create new_directory with new_filename in it
+        #
+        #     print("FILE ", file)
+        #     print("DST ", dst)
+        #
+        #     os.rename(file, dst) # rename the file
+        #     # rename all occurrences in files_to_renames
+        #     old_file = file
+        #     for _file in files_to_rename:
+        #         print(" _FILE to fix ", _file)
+        #         _file = _file.replace(old_file, dst)
+        #         print(" FIXED _FILE  ", _file)
+
+        imax = len(files_to_rename)
+        i = 0
+        while i< imax:
+            file = files_to_rename[i]
             filename = file.split("\\")[-1]
             newfilename = ""
             previous_char = ""
@@ -56,9 +85,22 @@ class Renamer():
                 previous_char = char
                 newfilename += char
 
-            dst = "\\".join(file.split("\\")[:-1]) + "\\" + newfilename
-            os.rename(file, dst)
+            dst = "\\".join(file.split("\\")[:-1]) + "\\" + newfilename  # create new_directory with new_filename in it
 
+            print("FILE ", file)
+            print("DST ", dst)
+
+            os.rename(file, dst)  # rename the file
+            # rename all occurrences in files_to_renames
+            old_file = file
+
+            files_to_rename = [_file.replace(old_file, dst) if old_file in _file else _file for _file in files_to_rename] # find and repl
+                # if old_file in _file:
+                #     print(" _FILE to fix ", _file)
+                #     _file = _file.replace(old_file, dst)
+                #     print(" FIXED _FILE  ", _file)
+
+            i += 1
                 # os.rename()
 
 
