@@ -1,8 +1,12 @@
 """
 rename all files to condition python names
+# module - small_characters.py
+# directory/package - small_characters
+# more about naming:
+# https://visualgit.readthedocs.io/en/latest/pages/naming_convention.html
 """
 import os
-
+import sys
 
 class Renamer():
     def __init__(self, start_directory, ignore_files=[]):
@@ -45,33 +49,7 @@ class Renamer():
                 files_to_rename.append(root)
             return files_to_rename
         files_to_rename = find_files()
-        print(files_to_rename)
-
-        # NO
-        # [string,string,string,] -> [list, list,list]
-        # translate directories from string to list format
-
-        # for file in files_to_rename:
-        #     filename = file.split("\\")[-1]
-        #     newfilename = ""
-        #     previous_char = ""
-        #     for char in filename:
-        #         char = self.statemachine(previous_char, char)
-        #         previous_char = char
-        #         newfilename += char
-        #
-        #     dst = "\\".join(file.split("\\")[:-1]) + "\\" + newfilename # create new_directory with new_filename in it
-        #
-        #     print("FILE ", file)
-        #     print("DST ", dst)
-        #
-        #     os.rename(file, dst) # rename the file
-        #     # rename all occurrences in files_to_renames
-        #     old_file = file
-        #     for _file in files_to_rename:
-        #         print(" _FILE to fix ", _file)
-        #         _file = _file.replace(old_file, dst)
-        #         print(" FIXED _FILE  ", _file)
+        # print(files_to_rename)
 
         imax = len(files_to_rename)
         i = 0
@@ -87,21 +65,20 @@ class Renamer():
 
             dst = "\\".join(file.split("\\")[:-1]) + "\\" + newfilename  # create new_directory with new_filename in it
 
-            print("FILE ", file)
-            print("DST ", dst)
+            # print("FILE ", file)
+            # print("DST ", dst)
 
-            os.rename(file, dst)  # rename the file
+            try:
+                os.rename(file, dst)  # rename the file
+            except:
+                os.execv(__file__, sys.argv)
+                quit()
+
             # rename all occurrences in files_to_renames
             old_file = file
 
             files_to_rename = [_file.replace(old_file, dst) if old_file in _file else _file for _file in files_to_rename] # find and repl
-                # if old_file in _file:
-                #     print(" _FILE to fix ", _file)
-                #     _file = _file.replace(old_file, dst)
-                #     print(" FIXED _FILE  ", _file)
-
             i += 1
-                # os.rename()
 
 
     def statemachine(self, previous_char:str, char:str):
@@ -117,15 +94,7 @@ class Renamer():
 
 if __name__ == '__main__':
     print("file renamer is running")
-    # start_directory = input("enter absolute start path: ")
-    start_directory = r"D:\work\practice"
+    start_directory = r"D:\work\ssupractice"
     renamer = Renamer(start_directory)
-    # renamer.print()
     renamer()
     renamer.status()
-
-# module - small_characters.py
-# directory/package - small_characters
-# class - CamelCase ///////////// will not realise
-# more about naming:
-# https://visualgit.readthedocs.io/en/latest/pages/naming_convention.html
