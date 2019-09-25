@@ -118,7 +118,7 @@ class Renamer():
 if __name__ == '__main__':
     print("file renamer is running")
     # start_directory = input("enter absolute start path: ")
-    start_directory = r"D:\work\practice\virtual_M"
+    start_directory = r"D:\work\practice"
     renamer = Renamer(start_directory)
     # renamer.print()
     renamer()
