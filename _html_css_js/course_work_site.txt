@@ -1,0 +1,45 @@
+<html>
+
+  <head>
+    <title>course work</title>
+  </head>
+
+  <body>
+    <h1 id="wellcome">
+      made by Desyatov Igor
+    </h1>
+    <h2 id="siteName">
+      Network and Oscillations
+    </h2>
+    <ul id="menu">
+      <li>About</li>
+      <li>License</li>
+      <li>Introduction</li>
+      
+      <li>Networks</li>
+      <ul>
+        <li>Small world</li>
+        <li>Free scale</li>
+        <li>Random</li>
+        <li>Regular</li>
+        <li>All connected</li>
+      </ul>
+      
+
+      <li>Info</li>
+      <ul>
+        <li>metrics</li>
+        <li>diagramms</li>
+        <li>applicattions</li>
+        <li>applications</li>
+      </ul>
+      <li>Summary</li>
+      <li>Library</li>
+      <li>Contacts</li>
+      
+      
+    </ul>
+
+  </body>
+
+</html>

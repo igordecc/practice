@@ -1,0 +1,31 @@
+<html>
+ <head>
+  <title>art collector</title>
+</head>
+
+<body>
+<h1 id="wellcome">
+Your art collection
+</h1>
+<ul id="siteMenu">
+  <li>collectionlink</li>
+  <li>embed</li>
+  <li>settings</li>
+</ul>
+<ul id="filemenu">
+ <li>images</li>
+ <li>video</li>
+ <li>audio</li>
+ <li>+</li>
+</ul>
+
+<div id="DAD">
+drag and drop
+</div>
+
+<div id="upload">
+upload from file
+</div>
+
+</body>
+</html>
