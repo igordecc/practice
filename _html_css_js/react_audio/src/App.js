@@ -10,6 +10,8 @@ function App () {
     The page where user start observing the site</p>
 
     <Link to="/about">Go to About</Link>
+    <br/>
+    <Link to="/labyrinth">Go to Labyrinth</Link>
   </div>
   )
 };
