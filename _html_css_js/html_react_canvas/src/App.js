@@ -36,28 +36,45 @@ function draw_circle(ctx, location) {
   ctx.restore()
 }
 
+
 function App() {
   const canvasRef = React.useRef(null)
   const [locations, setLocations] = React.useState([])
   console.log(locations)
-  return (
-    <canvas 
-      ref={canvasRef}
-      width={window.innerWidth}
-      height={window.innerHeight}
-      onClick={e => {
-        const canvas = canvasRef.current
-        const ctx = canvas.getContext(`2d`);
-        const newLocation = { x : e.clientX, y: e.clientY }
-        setLocations([...locations, newLocation])
-        draw_circle(ctx, newLocation)
-        
-      
 
-      }}
-      
-      
-    />
+  React.useEffect( () => {
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    ctx.clearRect(0, 0, window.innerHeight, window.innerWidth)
+    locations.forEach(location => draw_circle(ctx, location))
+  })
+
+  function handleCanvasClick (e) {
+    const newLocation = {x: e.clientX, y: e.clientY}
+    setLocations([...locations, newLocation])
+  }
+
+  function handleClear() {
+    setLocations([])
+  }
+
+  function handleUndo (){
+    setLocations([...locations.slice(0,-1)])
+  }
+
+  return (
+    <> 
+      <div className="controls">
+        <button onClick={handleClear}>Clear</button>
+        <button onClick={handleUndo}>Undo</button>
+      </div>
+      <canvas 
+        ref={canvasRef}
+        width={window.innerWidth}
+        height={window.innerHeight}
+        onClick={handleCanvasClick} 
+      />
+    </>
   );
 }
 
