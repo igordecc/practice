@@ -44,7 +44,7 @@ def Example2():
     m1 = oscillators_number // 2 - m2 // 2
 
     graph_list = [
-        # networkx.scale_free_graph(oscillators_number),
+        networkx.scale_free_graph(oscillators_number),
         networkx.complete_graph(oscillators_number),
         networkx.fast_gnp_random_graph(oscillators_number, p=0.5),
         networkx.watts_strogatz_graph(oscillators_number, neighbours, reconnectionProbability),
@@ -52,27 +52,23 @@ def Example2():
     ]
 
     graph_list = [networkx.to_undirected(graph) for graph in graph_list]
-
+    graph_list[0] = networkx.Graph(list(set(graph_list[0].edges())))
+    print(graph_list[1].edges())
 
     summed_graph = summator(graph_list)
-    print(summed_graph.edges())
 
-    networkx.draw(summed_graph)
+    networkx.draw(graph_list[0])
     plt.show()
 
     G = networkx.scale_free_graph(oscillators_number)
-
+    networkx.to_undirected(G)
 
 
 
 def summator(graph_list):
     summ_graph = networkx.Graph()
     for graph in graph_list:
-        # if graph.is_multigraph():
-        #     # graph.to_underected()
-        # summ_graph.add_edges_from(graph.edges())    #doesnot work
-        # summ_graph.add_nodes_from(graph.nodes())    #doesnot work
-        networkx.compose(summ_graph, graph)
+        print(graph.edges())
     # summ_graph.add_edges_from(graph_list[0].edges())
     return summ_graph
 
