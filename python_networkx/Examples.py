@@ -25,8 +25,8 @@ def Example1():
     x += y
 
     graph_x = networkx.Graph(x)
-    # networkx.draw(graph_x)
-    # plt.show()
+    networkx.draw(graph_x)
+    plt.show()
     return graph_x
 
 
@@ -55,24 +55,39 @@ def Example2():
     graph_list[0] = networkx.Graph(list(set(graph_list[0].edges())))
     print(graph_list[1].edges())
 
-    summed_graph = summator(graph_list)
 
-    networkx.draw(graph_list[0])
+    def build_graphs(graph_list):
+        summed_graph = networkx.Graph()
+        for graph in graph_list:
+            graph.edges()
+            print()
+
+        low_border = 0
+        for i in range(len(graph_list)):
+
+            # extract edges from graph
+            # update nodes numbers
+            x = [(edge[0]+low_border, edge[1]+low_border) for edge in graph_list[i].edges()]
+
+             #update low_border
+            for edge in x:
+                for node in edge:
+                    if node >= low_border:
+                        low_border = node + 1
+
+            summed_graph.add_edges_from(x)
+            print(x)
+        # summ_graph.add_edges_from(graph_list[0].edges())
+        return summed_graph
+
+
+    summed_graph = build_graphs(graph_list)
+    networkx.draw(summed_graph)
     plt.show()
 
     G = networkx.scale_free_graph(oscillators_number)
     networkx.to_undirected(G)
 
 
-
-def summator(graph_list):
-    summ_graph = networkx.Graph()
-    for graph in graph_list:
-        print(graph.edges())
-    # summ_graph.add_edges_from(graph_list[0].edges())
-    return summ_graph
-
-
-
 if __name__ == '__main__':
-    Example2()
+    Example1()
