@@ -2,7 +2,7 @@ import networkx
 import matplotlib.pyplot as plt
 
 
-def add_graphs(graphs):
+def interconnect_graphs(graphs):
     """
     create graph from multiple graphs
     :param graphs:
@@ -54,6 +54,6 @@ if __name__ == '__main__':
         networkx.barbell_graph(m1, m2)
     ]
 
-    summed_graph = add_graphs(graph_list)
+    summed_graph = interconnect_graphs(graph_list)
     networkx.draw_networkx(summed_graph)
     plt.show()
