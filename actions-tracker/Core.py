@@ -68,7 +68,7 @@ class Application_File_Logging(Application_Logging):
 #to install keyboard.py do: "pip3 install keyboard" in your command line
 #for more information visit: "https://github.com/boppreh/keyboard"
 #TODO do Absent Tracker from it. - If human don't smash buttons some time - he is absent
-import keyboard
+# import keyboard
 #keyboard.hook()
 
 from PyQt5 import Qt, QtCore, QtWidgets
