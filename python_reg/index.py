@@ -44,13 +44,33 @@ def do_login():
     if check_login(username, password):
         USERS.update({username: password})
 
-
-
         route_user(username)
         return "<p>Your login information was correct.</p>"
     else:
         return "<p>Login failed.</p>"
 
+
+app.config["UPLOAD_FOLDER"] = "uploads"
+
+@app.route("/sendfile", methods=["POST"])
+def send_file():
+    fileob = request.files["file2upload"]
+    filename = secure_filename(fileob.filename)
+    save_path = "{}/{}".format(app.config["UPLOAD_FOLDER"], filename)
+    fileob.save(save_path)
+    return "successful_upload"
+
+@route("/sendfile", methods=["POST"])
+def send_file():
+    fileob = request.files["file2upload"]
+
+    def secure_filename(filename:str):
+        assert filename is not None
+        return filename
+    filename = secure_filename(fileob.filename)
+    save_path = "{}/{}".format(app.config["UPLOAD_FOLDER"], filename)
+    fileob.save(save_path)
+    return "successful_upload"
 
 def main():
     run(host='localhost', port=8080, debug=True)
