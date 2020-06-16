@@ -1,22 +1,5 @@
 'use strict';
 
-
-function counter() {
-  let seconds = 0;
-  let SRC="\download.jpg";
-
-  setInterval(() => {
-    seconds += 1;``
-    document.getElementById('app').innerHTML = `<p>You have been here for ${seconds} seconds.</p>`;
-  }, 1000);
-  let image = new Image(SRC)
-  document.getElementById('img').innerHTML = `<img src=${image.background} width=100;>`;
-  document.getElementById('img').innerHTML = `<canvas src=${image.background} width=100;> </canvas>`;
-}
-
-counter();
-
-
 function Image(src) {
   this.background = []
   if (src){
@@ -32,3 +15,39 @@ function ActionStack(){
   this.cancel = () => this.stack.pop()
   return this
 };
+
+var SRC="\download.jpg";
+var image = new Image(SRC);
+
+function counter() {
+  let seconds = 0;
+
+  setInterval(() => {
+    seconds += 1;``
+    document.getElementById('timeCount').innerHTML = `<p>You have been here for ${seconds} seconds.</p>`;
+  }, 1000);
+}
+
+counter();
+function initUI (){
+  document.getElementById('file').innerHTML = `<input id="inputId" type="file">`;
+  document.getElementById('img').innerHTML = `<img src=${image.background} width=100;>`;
+  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" src=${image.background} width=100;> </canvas>`;
+}
+
+initUI();
+
+
+var inputElement = document.getElementById("inputId");
+
+inputElement.oninput = (e)=>{
+  // get element value works perfectly, now  TODO:fetch real adress
+  let imageRequest = new Request('screen.png'); 
+  image.background = inputElement.files[0].name;
+  document.getElementById('img').innerHTML = `<img src=${image.background} width=100;>`;  
+}
+
+function initTools(){
+  document.getElementById('toolBox').innerHTML = `<button id="pencil">pencil</button>`
+}
+initTools();
