@@ -34,7 +34,7 @@ counter();
 function initUI (){
   document.getElementById('file').innerHTML = `<input id="inputId" type="file">`;
   document.getElementById('img').innerHTML = `<img src=${image.background} width=100;>`;
-  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" width="300" height="150" style="border:1px solid #d3d3d3;"> </canvas>`;
+  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" width="600" height="400" style="border:1px solid #d3d3d3;"> </canvas>`;
 
   var canvas = document.getElementById('canvasId');
   var ctx = canvas.getContext('2d');
@@ -56,20 +56,38 @@ function initUI (){
 
   ctx.fillStyle = "#FF0000";
   
+  var state = "0";
+  var pressPoint = [0,0]
   canvas.onmousedown = (e)=>{
-
+    state = "1";
+    pressPoint = [e.offsetX, e.offsetY];
   }
   canvas.onmousemove =(e)=>{
     //switch case "0" 
-    console.log("x:"+e.clientX+"  y:"+e.clientY);
-    console.log("x:"+e.offsetX+"  y:"+e.offsetY);
-    ctx.fillStyle = 'red';
+    if (state == "1" ) {
+      ctx.strokeStyle = 'red';
+      ctx.fill();
+    
+    // ctx.beginPath();
+    // ctx.arc(e.offsetX, e.offsetY, 10, 0, 2 * Math.PI);
+    // ctx.stroke();
+    // ctx.fillStyle="red";
+    // ctx.fill();
+
     ctx.beginPath();
-    ctx.arc(e.offsetX, e.offsetY, 10, 0, 2 * Math.PI);
+    ctx.lineWidth = 10;
+    ctx.lineCap = "round";
+    ctx.moveTo(pressPoint[0], pressPoint[1])
+    ctx.lineTo(e.offsetX, e.offsetY);
+    pressPoint = [e.offsetX, e.offsetY];
+    
     ctx.stroke();
-    ctx.fillStyle="red";
-    ctx.fill();
+    
+    } 
   };
+  canvas.onmouseup = (e) => {
+    state = "0";
+  }
 
 
 }
