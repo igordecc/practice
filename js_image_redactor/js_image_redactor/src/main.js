@@ -1,13 +1,9 @@
+/*
+canvas html picture.
+*/ 
 'use strict';
-
-function Image(src) {
-  this.background = []
-  if (src){
-    this.background = src
-  }
-  // this.resolution = (x,y)
-  this.ActionStack = new ActionStack()
-}
+var SRC= "\download.jpg";
+// Note: no background and layers mean NO IMAGE OBJECT for now - delete image object. Use var image.
 
 function ActionStack(){
   this.stack = []
@@ -16,8 +12,6 @@ function ActionStack(){
   return this
 };
 
-var SRC="\download.jpg";
-var image = new Image(SRC);
 
 function counter() {
   let seconds = 0;
@@ -27,13 +21,12 @@ function counter() {
     document.getElementById('timeCount').innerHTML = `<p>You have been here for ${seconds} seconds.</p>`;
   }, 1000);
 }
-
 counter();
 
 
 function initUI (){
   document.getElementById('file').innerHTML = `<input id="inputId" type="file">`;
-  document.getElementById('img').innerHTML = `<img src=${image.background} width=100;>`;
+  document.getElementById('img').innerHTML = `<img src=${SRC} width=100;>`;
   document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" width="600" height="400" style="border:1px solid #d3d3d3;"> </canvas>`;
 
   var canvas = document.getElementById('canvasId');
@@ -50,47 +43,69 @@ function initUI (){
   var toolColor = document.getElementById('color');
   var toolUndo = document.getElementById('undo');
 
-  toolPencil.onchange = (e) => {
-    
+  var Pencil = function(){
+    this.state = "0";
+    this.changeState = ()=>{
+      if (this.state =="0") {
+        this.state = "1"
+      }
+      else {
+        this.state = "0"
+      }
+    }
+    this.mount = ()=>{
+      if (this.state=="1"){
+        ctx.fillStyle = "#FF0000";
+        var drawState = "0";
+        var pressPoint = [0,0]
+        canvas.onmousedown = (e)=>{
+          drawState = "1";
+          pressPoint = [e.offsetX, e.offsetY];
+        }
+        canvas.onmousemove =(e)=>{
+          if (drawState == "1" ) {
+            ctx.strokeStyle = 'red';
+            ctx.fill();
+          ctx.beginPath();
+          ctx.lineWidth = 10;
+          ctx.lineCap = "round";
+          ctx.moveTo(pressPoint[0], pressPoint[1])
+          ctx.lineTo(e.offsetX, e.offsetY);
+          pressPoint = [e.offsetX, e.offsetY];
+          
+          ctx.stroke();
+          } 
+        };
+        canvas.onmouseup = (e) => {
+          drawState = "0";
+        }
+      }
+      else {
+        canvas.onmousedown = null;
+        canvas.onmousemove = null;
+        canvas.onmouseup = null;
+      }
+    }
+  }
+   
+
+  let tool = new Pencil()
+  console.log("tool state: "+tool.state)
+  toolPencil.onclick = (e) => {
+    tool.changeState()
+    tool.mount()
   }
 
-  ctx.fillStyle = "#FF0000";
-  
-  var state = "0";
-  var pressPoint = [0,0]
-  canvas.onmousedown = (e)=>{
-    state = "1";
-    pressPoint = [e.offsetX, e.offsetY];
-  }
-  canvas.onmousemove =(e)=>{
-    //switch case "0" 
-    if (state == "1" ) {
-      ctx.strokeStyle = 'red';
-      ctx.fill();
-    
-    // ctx.beginPath();
-    // ctx.arc(e.offsetX, e.offsetY, 10, 0, 2 * Math.PI);
-    // ctx.stroke();
-    // ctx.fillStyle="red";
-    // ctx.fill();
+  // TODO write outer function for Pencil
+  // when chosen: add Event listener
+  // when desposed: remove Event listener
 
-    ctx.beginPath();
-    ctx.lineWidth = 10;
-    ctx.lineCap = "round";
-    ctx.moveTo(pressPoint[0], pressPoint[1])
-    ctx.lineTo(e.offsetX, e.offsetY);
-    pressPoint = [e.offsetX, e.offsetY];
-    
-    ctx.stroke();
-    
-    } 
-  };
-  canvas.onmouseup = (e) => {
-    state = "0";
-  }
+
 
 
 }
+  
+  
 
 
 initUI();
@@ -99,9 +114,9 @@ initUI();
 var inputElement = document.getElementById("inputId");
 
 inputElement.oninput = (e)=>{ 
-  image.background = inputElement.files[0].name;
-  document.getElementById('img').innerHTML = `<img src=${image.background} width=100;>`;  
-  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" src=${image.background} width=100;> </canvas>`;  
+  SRC = inputElement.files[0].name;
+  document.getElementById('img').innerHTML = `<img src=${SRC} width=100;>`;  
+  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" width=100;> </canvas>`;  
 }
 
 function initTools(){
