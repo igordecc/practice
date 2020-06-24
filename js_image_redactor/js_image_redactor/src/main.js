@@ -50,6 +50,7 @@ function initUI (){
     <button id="text">text</button><br>
     <button id="color">color</button><br>
     <button id="undo">undo</button><br>
+    <button id="eraser">eraser</button><br>
     <button id="rectangle">rectangle</button><br>
     `;
 
@@ -57,6 +58,7 @@ function initUI (){
   var toolText = document.getElementById('text');
   var toolColor = document.getElementById('color');
   var toolUndo = document.getElementById('undo');
+  var toolEraser = document.getElementById('eraser');
   var toolRectangle = document.getElementById('rectangle');
 
 
@@ -81,7 +83,6 @@ var chosenTool = "";
       }
 
       canvas.onmousemove =(e)=>{
-
         ctx.beginPath();
         ctx.lineWidth = 10;
         ctx.lineCap = "round";
@@ -92,7 +93,6 @@ var chosenTool = "";
           ctx.strokeStyle = 'red';
           ctx.fill();
           ctx.stroke();
-
         } 
       };
 
@@ -117,7 +117,6 @@ var chosenTool = "";
       let drawState = "0";
       let pressPoint = [0,0]
 
-
       canvas.onmousedown = (e)=>{
         drawState = "1";
         pressPoint = [e.offsetX, e.offsetY,1,1];
@@ -135,8 +134,40 @@ var chosenTool = "";
         }
         drawState = "0";
       }
+      
      }
   };
+  
+  var Eraser = function() {
+  // TODO make centered on cursor
+    this.changeState = ()=>{
+        chosenTool = "eraser"; 
+    }
+    
+    this.mount = ()=>{
+      // add Event listener
+      let pressPoint = [0,0];
+      let size = [50,50];
+      ctx.lineWidth = 0;
+      var drawState = "0"
+
+      canvas.onmousedown = (e)=>{
+      	drawState = "1"
+        pressPoint = [e.offsetX, e.offsetY];
+        ctx.clearRect(e.offsetX, e.offsetY, size[0], size[1])
+      }
+
+      canvas.onmousemove =(e)=>{
+      	if (drawState=="1"){
+        	ctx.clearRect(e.offsetX, e.offsetY, size[0], size[1])
+        };
+      };
+
+      canvas.onmouseup = (e) => {
+      drawState = "0";
+      }
+    }
+  }
   
 // ---------
   let toolPencilInstance = new Pencil()
@@ -150,6 +181,13 @@ var chosenTool = "";
     toolRectangleInstance.changeState()
     toolRectangleInstance.mount()
   }
+  
+  let toolEraserleInstance = new Eraser()
+  toolEraser.onclick = (e) => {
+    toolEraserleInstance.changeState()
+    toolEraserleInstance.mount()
+  }
+  
   
   
 //----------
