@@ -27,100 +27,136 @@ counter();
 function initUI (){
   document.getElementById('file').innerHTML = `<input id="inputId" type="file">`;
   document.getElementById('img').innerHTML = `<img src=${SRC} width=100;>`;
-  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" width="600" height="400" style="border:1px solid #d3d3d3;"> </canvas>`;
-
+  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" width="600" height="400" style="border:1px solid #d3d3d3;  background: #ABABAB;"> </canvas>`;
+  
   var canvas = document.getElementById('canvasId');
   var ctx = canvas.getContext('2d');
+  var inputElement = document.getElementById("inputId");
+  
+  inputElement.oninput = (e)=>{ 
+    SRC = inputElement.files[0].name;
+    document.getElementById('img').innerHTML = `<img id="imgPreviewId" src=${SRC}>`; 
+    var inputImage = new Image ()
+    inputImage.src = SRC 
+    console.log(inputImage)
+    console.log(ctx)
+    ctx.drawImage(inputImage, 10, 10, 256, 256);
+    console.log(ctx)  
+    console.log(ctx.drawImage)  
+  }
 
   document.getElementById('toolBox').innerHTML = `
     <button id="pencil">pencil</button><br>
     <button id="text">text</button><br>
     <button id="color">color</button><br>
-    <button id="undo">undo</button><br>`;
+    <button id="undo">undo</button><br>
+    <button id="rectangle">rectangle</button><br>
+    `;
 
   var toolPencil = document.getElementById('pencil');
   var toolText = document.getElementById('text');
   var toolColor = document.getElementById('color');
   var toolUndo = document.getElementById('undo');
+  var toolRectangle = document.getElementById('rectangle');
 
+
+// --- global tool chosen
+var chosenTool = "";
+// ----- tools object definition
   var Pencil = function(){
-    this.state = "0";
+    
     this.changeState = ()=>{
-      if (this.state =="0") {
-        this.state = "1"
-      }
-      else {
-        this.state = "0"
-      }
+    	chosenTool = "pencil";
     }
+    
     this.mount = ()=>{
-      if (this.state=="1"){
-        ctx.fillStyle = "#FF0000";
-        var drawState = "0";
-        var pressPoint = [0,0]
-        canvas.onmousedown = (e)=>{
-          drawState = "1";
-          pressPoint = [e.offsetX, e.offsetY];
-        }
-        canvas.onmousemove =(e)=>{
-          if (drawState == "1" ) {
-            ctx.strokeStyle = 'red';
-            ctx.fill();
-          ctx.beginPath();
-          ctx.lineWidth = 10;
-          ctx.lineCap = "round";
-          ctx.moveTo(pressPoint[0], pressPoint[1])
-          ctx.lineTo(e.offsetX, e.offsetY);
-          pressPoint = [e.offsetX, e.offsetY];
-          
-          ctx.stroke();
-          } 
-        };
-        canvas.onmouseup = (e) => {
-          drawState = "0";
-        }
+      // add Event listener
+      ctx.fillStyle = "#FF0000";
+      let drawState = "0";
+      let pressPoint = [0,0]
+
+      canvas.onmousedown = (e)=>{
+        drawState = "1";
+        pressPoint = [e.offsetX, e.offsetY];
       }
-      else {
-        canvas.onmousedown = null;
-        canvas.onmousemove = null;
-        canvas.onmouseup = null;
+
+      canvas.onmousemove =(e)=>{
+
+        ctx.beginPath();
+        ctx.lineWidth = 10;
+        ctx.lineCap = "round";
+        ctx.moveTo(pressPoint[0], pressPoint[1])
+        ctx.lineTo(e.offsetX, e.offsetY);
+        pressPoint = [e.offsetX, e.offsetY];
+        if (drawState == "1" ) {
+          ctx.strokeStyle = 'red';
+          ctx.fill();
+          ctx.stroke();
+
+        } 
+      };
+
+      canvas.onmouseup = (e) => {
+        drawState = "0";
       }
     }
   }
-   
+  
+  var Rectangle = function() {
 
-  let tool = new Pencil()
-  console.log("tool state: "+tool.state)
+    this.changeState = ()=>{
+    	chosenTool = "rectangle"; 
+    }
+    
+    this.mount = ()=>{
+      // add Event lister
+      let color = "#3333ff";
+      ctx.fillStyle = color;
+      ctx.strokeStyle = color
+      ctx.lineWidth = 10;
+      let drawState = "0";
+      let pressPoint = [0,0]
+
+
+      canvas.onmousedown = (e)=>{
+        drawState = "1";
+        pressPoint = [e.offsetX, e.offsetY,1,1];
+      } 
+
+      canvas.onmousemove =(e)=>{
+        // TODO: create move animation
+      };
+
+      canvas.onmouseup = (e) => {
+        if (drawState == "1" ) {
+          ctx.beginPath();
+          ctx.rect(pressPoint[0], pressPoint[1], e.offsetX-pressPoint[0], e.offsetY-pressPoint[1]);
+          ctx.stroke();
+        }
+        drawState = "0";
+      }
+     }
+  };
+  
+// ---------
+  let toolPencilInstance = new Pencil()
   toolPencil.onclick = (e) => {
-    tool.changeState()
-    tool.mount()
+    toolPencilInstance.changeState()
+    toolPencilInstance.mount()
   }
-
+  
+  let toolRectangleInstance = new Rectangle()
+  toolRectangle.onclick = (e) => {
+    toolRectangleInstance.changeState()
+    toolRectangleInstance.mount()
+  }
+  
+  
+//----------
   // TODO write outer function for Pencil
   // when chosen: add Event listener
   // when desposed: remove Event listener
 
-
-
-
 }
   
-  
-
-
 initUI();
-
-
-var inputElement = document.getElementById("inputId");
-
-inputElement.oninput = (e)=>{ 
-  SRC = inputElement.files[0].name;
-  document.getElementById('img').innerHTML = `<img src=${SRC} width=100;>`;  
-  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" width=100;> </canvas>`;  
-}
-
-function initTools(){
-  
-
-}
-initTools();
