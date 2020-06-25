@@ -46,12 +46,13 @@ function initUI (){
   }
 
   document.getElementById('toolBox').innerHTML = `
-    <button id="pencil">pencil</button><br>
-    <button id="text">text</button><br>
-    <button id="color">color</button><br>
-    <button id="undo">undo</button><br>
-    <button id="eraser">eraser</button><br>
-    <button id="rectangle">rectangle</button><br>
+    <button class="nav__link" id="pencil">pencil</button><br>
+    <button class="nav__link" id="text">text</button><br>
+    <button class="nav__link" id="color">color</button><br>
+    <button class="nav__link" id="undo">undo</button><br>
+    <button class="nav__link" id="eraser">eraser</button><br>
+    <button class="nav__link" id="rectangle">rectangle</button><br>
+    <button class="nav__link" id="ellipse">ellipse</button><br>
     `;
 
   var toolPencil = document.getElementById('pencil');
@@ -60,6 +61,7 @@ function initUI (){
   var toolUndo = document.getElementById('undo');
   var toolEraser = document.getElementById('eraser');
   var toolRectangle = document.getElementById('rectangle');
+  var toolEllipse = document.getElementById('ellipse');
 
 
 // --- global tool chosen
@@ -169,6 +171,52 @@ var chosenTool = "";
     }
   }
   
+  
+  var Ellipse = function () {
+  	
+    this.changeState = ()=>{
+     chosenTool = "elipse";
+    }
+    
+    this.mount = ()=>{
+    	let color = "#ffcc00";
+      ctx.fillStyle = color;
+      ctx.strokeStyle = color
+      ctx.lineWidth = 10;
+      let drawState = "0";
+      let pressPoint = [0,0];
+      
+      canvas.onmousedown = (e)=>{
+        drawState = "1";
+        pressPoint = [e.offsetX, e.offsetY,1,1];
+      } 
+
+      canvas.onmousemove =(e)=>{
+        // TODO: create move animation
+      };
+
+      canvas.onmouseup = (e) => {
+        if (drawState === "1" ) {
+          ctx.beginPath();
+          let yhalf = 0
+          if (e.offsetY>pressPoint[1]) {
+          	yhalf = e.offsetY-Math.abs(pressPoint[1]-e.offsetY)/2
+          }
+          else {
+          	yhalf = e.offsetY+Math.abs(pressPoint[1]-e.offsetY)/2
+          }
+          
+        ctx.moveTo(pressPoint[0],  yhalf);
+        ctx.bezierCurveTo(pressPoint[0], e.offsetY, e.offsetX, e.offsetY, e.offsetX, yhalf);
+        ctx.moveTo(pressPoint[0],  yhalf);
+        ctx.bezierCurveTo(pressPoint[0], pressPoint[1], e.offsetX, pressPoint[1], e.offsetX, yhalf);    
+        ctx.stroke();
+        }
+        drawState = "0";
+    	}
+  	}
+    
+  }
 // ---------
   let toolPencilInstance = new Pencil()
   toolPencil.onclick = (e) => {
@@ -182,19 +230,19 @@ var chosenTool = "";
     toolRectangleInstance.mount()
   }
   
-  let toolEraserleInstance = new Eraser()
+  let toolEraserInstance = new Eraser()
   toolEraser.onclick = (e) => {
-    toolEraserleInstance.changeState()
-    toolEraserleInstance.mount()
+    toolEraserInstance.changeState()
+    toolEraserInstance.mount()
+  }
+  
+   let toolEllipseInstance = new Ellipse()
+  toolEllipse.onclick = (e) => {
+    toolEllipseInstance.changeState()
+    toolEllipseInstance.mount()
   }
   
   
-  
-//----------
-  // TODO write outer function for Pencil
-  // when chosen: add Event listener
-  // when desposed: remove Event listener
-
 }
   
 initUI();
