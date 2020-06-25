@@ -27,7 +27,7 @@ counter();
 function initUI (){
   document.getElementById('file').innerHTML = `<input id="inputId" type="file">`;
   document.getElementById('img').innerHTML = `<img src=${SRC} width=100;>`;
-  document.getElementById('canvas').innerHTML = `<canvas  id="canvasId" width="600" height="400" style="border:1px solid #d3d3d3;  background: #ABABAB;"> </canvas>`;
+  document.getElementById('canvas').innerHTML = `<canvas tabindex='1' id="canvasId" width="600" height="400" style="border:1px solid #d3d3d3;  background: #ABABAB;"> </canvas>`; // tabindex='1' to get element focusable
   
   var canvas = document.getElementById('canvasId');
   var ctx = canvas.getContext('2d');
@@ -62,6 +62,7 @@ function initUI (){
   var toolEraser = document.getElementById('eraser');
   var toolRectangle = document.getElementById('rectangle');
   var toolEllipse = document.getElementById('ellipse');
+  var toolText = document.getElementById('text');
 
 
 // --- global tool chosen
@@ -170,8 +171,7 @@ var chosenTool = "";
       }
     }
   }
-  
-  
+   
   var Ellipse = function () {
   	
     this.changeState = ()=>{
@@ -217,6 +217,51 @@ var chosenTool = "";
   	}
     
   }
+  
+  var Text = function () {
+  	
+    this.changeState = ()=>{
+    	chosenTool = "elipse";
+    }
+    
+    this.mount = ()=>{
+    	let color = "#ffcc00";
+      ctx.fillStyle = color;
+      ctx.strokeStyle = color
+      ctx.lineWidth = 10;
+      let drawState = "0";
+      let pressPoint = [0,0];
+      
+      let lastDownTarget;
+      
+      canvas.onmousedown = (e)=>{
+      	lastDownTarget = e.target;
+        drawState = "1";
+        pressPoint = [e.offsetX, e.offsetY];
+        ctx.font = "30px Arial";
+				ctx.fillText("Hello World", pressPoint[0], pressPoint[1]);
+      } 
+
+      canvas.onmousemove =(e)=>{
+        // TODO: create move animation
+      };
+      
+      canvas.addEventListener( "keydown", doKeyDown, false);
+      function doKeyDown(e){
+      	if(lastDownTarget == canvas) {
+        	alert( e.keyCode )
+          pressPoint[0] = pressPoint[0] + "10";
+          ctx.font = "30px Arial";
+          ctx.fillText("123", pressPoint[0], pressPoint[1]);
+          console.log("123123")
+        }
+      }
+      
+      canvas.onmouseup = (e) => {
+        console.log("hello")
+    	}
+  	}
+  }
 // ---------
   let toolPencilInstance = new Pencil()
   toolPencil.onclick = (e) => {
@@ -240,6 +285,12 @@ var chosenTool = "";
   toolEllipse.onclick = (e) => {
     toolEllipseInstance.changeState()
     toolEllipseInstance.mount()
+  }
+  
+  let toolTextInstance = new Text()
+  toolText.onclick = (e) => {
+    toolTextInstance.changeState()
+    toolTextInstance.mount()
   }
   
   
