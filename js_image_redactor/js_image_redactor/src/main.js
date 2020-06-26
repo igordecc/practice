@@ -221,7 +221,7 @@ var chosenTool = "";
   var Text = function () {
   	
     this.changeState = ()=>{
-    	chosenTool = "elipse";
+    	chosenTool = "text";
     }
     
     this.mount = ()=>{
@@ -231,37 +231,60 @@ var chosenTool = "";
       ctx.lineWidth = 10;
       let drawState = "0";
       let pressPoint = [0,0];
-      
       let lastDownTarget;
+      ctx.font = "30px Arial";
+      let charStack = "";
+      
+      
       
       canvas.onmousedown = (e)=>{
       	lastDownTarget = e.target;
         drawState = "1";
         pressPoint = [e.offsetX, e.offsetY];
-        ctx.font = "30px Arial";
-				ctx.fillText("Hello World", pressPoint[0], pressPoint[1]);
+				ctx.fillText("", pressPoint[0], pressPoint[1]);
+        charStack = "";
+        console.log(charStack);
       } 
 
       canvas.onmousemove =(e)=>{
         // TODO: create move animation
       };
       
-      canvas.addEventListener( "keydown", doKeyDown, false);
-      function doKeyDown(e){
-      	if(lastDownTarget == canvas) {
-        	alert( e.keyCode )
-          pressPoint[0] = pressPoint[0] + "10";
-          ctx.font = "30px Arial";
-          ctx.fillText("123", pressPoint[0], pressPoint[1]);
-          console.log("123123")
+      let doKeyPress = (e)=>{
+      	if ((lastDownTarget == canvas)&&(drawState==="1")&&(drawState==="1")) {
+          e = e || window.event;
+          let charCode = e.which || e.keyCode || e.charCode;
+          let pressedChar = String.fromCharCode(charCode)          
+          charStack += pressedChar;  
+          ctx.fillText(charStack, pressPoint[0], pressPoint[1]);
         }
       }
       
+      let doKeyDown = (e)=>{
+        if (e.keyCode==="8"){
+        	// backspace realisation
+        	charStack.pop();
+          ctx.fillText(charStack, pressPoint[0], pressPoint[1]);
+          console.log("backspace")
+        }
+        }
+      
+      canvas.removeEventListener( "keypress", doKeyPress, false);
+      canvas.removeEventListener( "keydown", doKeyDown, false);
+      
+      canvas.addEventListener( "keypress", doKeyPress, false);
+      
+      canvas.addEventListener( "keydown", doKeyDown, false);
+ 
       canvas.onmouseup = (e) => {
-        console.log("hello")
     	}
   	}
   }
+  
+  function demountCanvas(){
+  	canvas.removeEventListener()
+  }
+  
 // ---------
   let toolPencilInstance = new Pencil()
   toolPencil.onclick = (e) => {
