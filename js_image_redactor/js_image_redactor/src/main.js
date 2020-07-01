@@ -28,24 +28,58 @@ function initUI (){
   document.getElementById('toolBox').innerHTML = `
     <button class="nav__link" id="pencil">pencil</button><br>
     <button class="nav__link" id="text">text</button><br> 
-    <input id="color" class="nav__link" type='color'><br>
+    <input  class="nav__link" id="color"  type='color'><br>
+    <input  class="nav__link" id="lineW" min=1 max=30 value=10 type='range'>
+    <input  class="nav__link" id="lineWValue" type='text' size="5"><br>
     <button class="nav__link" id="undo">undo</button><br>
     <button class="nav__link" id="eraser">eraser</button><br>
     <button class="nav__link" id="rectangle">rectangle</button><br>
     <button class="nav__link" id="ellipse">ellipse</button><br>
     `;
     
+  // TODO: full image Undo
+  // and redo
+  // TODO: canvas.tool that returns element and autobind event on this element
 	
   var toolPencil = document.getElementById('pencil');
   var toolText = document.getElementById('text');
   var toolColor = document.getElementById('color');
+  var toolLineW = document.getElementById('lineW'); var toolLineWValue = document.getElementById('lineWValue');
   var toolUndo = document.getElementById('undo');
   var toolEraser = document.getElementById('eraser');
   var toolRectangle = document.getElementById('rectangle');
   var toolEllipse = document.getElementById('ellipse');
   var toolText = document.getElementById('text');
   
-
+// --- undo
+let getI = (e)=>{return ctx.getImageData(0,0,canvas.width, canvas.height)}
+let undoStack = [getI(),]
+toolUndo.addEventListener("click", 
+	(e)=>{
+  	if (undoStack.length>1) {undoStack.pop()};
+    ctx.putImageData(undoStack[undoStack.length-1], 0,0,0,0,canvas.width, canvas.height);      
+      }, 
+  false);
+  
+// --- line width
+ctx.lineWidth = toolLineW.value;
+toolLineWValue.value = toolLineW.value;
+toolLineW.addEventListener("input", 
+	(e)=>{
+		ctx.lineWidth = toolLineW.value; 
+    toolLineWValue.value = toolLineW.value;
+    }, 
+	false)
+// --- color 
+ctx.fillStyle = toolColor.value; 
+ctx.strokeStyle = toolColor.value;
+toolColor.addEventListener("blur", 
+	(e)=>{
+  	ctx.fillStyle = toolColor.value; 
+    ctx.strokeStyle = toolColor.value;
+    }, 
+  false);
+ 
 
 // --- global tool chosen
 var chosenTool = "";
@@ -65,9 +99,7 @@ var chosenTool = "";
       var inputImage = new Image ()
       inputImage.src = inputURL    
       ctx.drawImage(inputImage, 10, 10, 256, 256);
-      /* //if input field is file*/
-      let SRC = inputElement.src
-      document.getElementById('img').innerHTML = `<img id="imgPreviewId" src=${SRC}>`; 
+      undoStack.push(getI()) 
     }	    
   }
 
@@ -79,7 +111,6 @@ var chosenTool = "";
     
     this.mount = ()=>{
       // add Event listener
-      ctx.fillStyle = "#FF0000";
       let drawState = "0";
       let pressPoint = [0,0]
 
@@ -90,13 +121,11 @@ var chosenTool = "";
 
       canvas.onmousemove =(e)=>{
         ctx.beginPath();
-        ctx.lineWidth = 10;
         ctx.lineCap = "round";
         ctx.moveTo(pressPoint[0], pressPoint[1])
         ctx.lineTo(e.offsetX, e.offsetY);
         pressPoint = [e.offsetX, e.offsetY];
         if (drawState == "1" ) {
-          ctx.strokeStyle = 'red';
           ctx.fill();
           ctx.stroke();
         } 
@@ -104,6 +133,7 @@ var chosenTool = "";
 
       canvas.onmouseup = (e) => {
         drawState = "0";
+        undoStack.push(getI()) 
       }
     }
   }
@@ -116,10 +146,6 @@ var chosenTool = "";
     
     this.mount = ()=>{
       // add Event lister
-      let color = "#3333ff";
-      ctx.fillStyle = color;
-      ctx.strokeStyle = color
-      ctx.lineWidth = 10;
       let drawState = "0";
       let pressPoint = [0,0]
 
@@ -139,6 +165,7 @@ var chosenTool = "";
           ctx.stroke();
         }
         drawState = "0";
+        undoStack.push(getI()); 
       }
       
      }
@@ -154,7 +181,6 @@ var chosenTool = "";
       // add Event listener
       let pressPoint = [0,0];
       let size = [50,50];
-      ctx.lineWidth = 0;
       var drawState = "0"
 
       canvas.onmousedown = (e)=>{
@@ -171,6 +197,7 @@ var chosenTool = "";
 
       canvas.onmouseup = (e) => {
       drawState = "0";
+      undoStack.push(getI());
       }
     }
   }
@@ -182,10 +209,6 @@ var chosenTool = "";
     }
     
     this.mount = ()=>{
-    	let color = "#ffcc00";
-      ctx.fillStyle = color;
-      ctx.strokeStyle = color
-      ctx.lineWidth = 10;
       let drawState = "0";
       let pressPoint = [0,0];
       
@@ -216,6 +239,7 @@ var chosenTool = "";
         ctx.stroke();
         }
         drawState = "0";
+        undoStack.push(getI());
     	}
   	}
     
@@ -228,10 +252,6 @@ var chosenTool = "";
     }
     
     this.mount = ()=>{
-    	let color = "#ffcc00";
-      ctx.fillStyle = color;
-      ctx.strokeStyle = color
-      ctx.lineWidth = 10;
       let drawState = "0";
       let pressPoint = [0,0];
       let lastDownTarget;
@@ -278,15 +298,10 @@ var chosenTool = "";
       canvas.addEventListener( "keydown", doKeyDown, false);
  
       canvas.onmouseup = (e) => {
+      undoStack.push(getI());
     	}
   	}
   }
-  
-// --------- color
-toolColor.addEventListener("input", (e)=>{console.log(e.srcElement)}, false);
-
-
-  
   
 // ---------
   inputElement.addEventListener("blur", imageInput, false);
