@@ -32,6 +32,7 @@ function initUI (){
     <input  class="nav__link" id="lineW" min=1 max=30 value=10 type='range'>
     <input  class="nav__link" id="lineWValue" type='text' size="5"><br>
     <button class="nav__link" id="undo">undo</button><br>
+    <button class="nav__link" id="redo">redo</button><br>
     <button class="nav__link" id="eraser">eraser</button><br>
     <button class="nav__link" id="rectangle">rectangle</button><br>
     <button class="nav__link" id="ellipse">ellipse</button><br>
@@ -46,21 +47,40 @@ function initUI (){
   var toolColor = document.getElementById('color');
   var toolLineW = document.getElementById('lineW'); var toolLineWValue = document.getElementById('lineWValue');
   var toolUndo = document.getElementById('undo');
+  var toolRedo = document.getElementById('redo');
   var toolEraser = document.getElementById('eraser');
   var toolRectangle = document.getElementById('rectangle');
   var toolEllipse = document.getElementById('ellipse');
   var toolText = document.getElementById('text');
-  
-// --- undo
+
+// get image data with canvas dimentions  
 let getI = (e)=>{return ctx.getImageData(0,0,canvas.width, canvas.height)}
+// --- undo
+let redoStack = []
 let undoStack = [getI(),]
-toolUndo.addEventListener("click", 
-	(e)=>{
-  	if (undoStack.length>1) {undoStack.pop()};
+let undoFunc = 	(e)=>{
+  	if (undoStack.length>1) {redoStack.push(undoStack.pop())};
     ctx.putImageData(undoStack[undoStack.length-1], 0,0,0,0,canvas.width, canvas.height);      
-      }, 
-  false);
-  
+    };
+toolUndo.addEventListener("click", undoFunc, false);
+window.addEventListener("keydown", (e)=>{if (e.ctrlKey && !e.shiftKey &&e.code ==="KeyZ"){undoFunc(e)}}, false);
+// --- redo
+ 	let redoFunc = (e)=>{
+  	if (redoStack.length>0){
+    	ctx.putImageData(
+      	redoStack[redoStack.length-1], 
+        0,
+        0,
+        0,
+        0,
+        canvas.width, 
+        canvas.height
+        );
+      undoStack.push(redoStack.pop());
+      }
+    }; 
+toolRedo.addEventListener("click", redoFunc, false);
+window.addEventListener("keydown", (e)=>{if ((e.ctrlKey && e.shiftKey && e.code ==="KeyZ")||(e.ctrlKey && e.code ==="KeyY")||(e.ctrlKey && e.shiftKey && e.code ==="KeyY")) {redoFunc(e)}}, false)
 // --- line width
 ctx.lineWidth = toolLineW.value;
 toolLineWValue.value = toolLineW.value;
@@ -99,7 +119,8 @@ var chosenTool = "";
       var inputImage = new Image ()
       inputImage.src = inputURL    
       ctx.drawImage(inputImage, 10, 10, 256, 256);
-      undoStack.push(getI()) 
+      undoStack.push(getI());
+      redoStack = [];
     }	    
   }
 
@@ -133,7 +154,8 @@ var chosenTool = "";
 
       canvas.onmouseup = (e) => {
         drawState = "0";
-        undoStack.push(getI()) 
+        undoStack.push(getI());
+        redoStack = [];
       }
     }
   }
@@ -166,6 +188,7 @@ var chosenTool = "";
         }
         drawState = "0";
         undoStack.push(getI()); 
+        redoStack = [];
       }
       
      }
@@ -198,6 +221,7 @@ var chosenTool = "";
       canvas.onmouseup = (e) => {
       drawState = "0";
       undoStack.push(getI());
+      redoStack = [];
       }
     }
   }
@@ -240,6 +264,7 @@ var chosenTool = "";
         }
         drawState = "0";
         undoStack.push(getI());
+        redoStack = [];
     	}
   	}
     
@@ -299,6 +324,7 @@ var chosenTool = "";
  
       canvas.onmouseup = (e) => {
       undoStack.push(getI());
+      redoStack = [];
     	}
   	}
   }
