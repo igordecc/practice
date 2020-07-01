@@ -2,59 +2,40 @@
 canvas html picture.
 */ 
 'use strict';
-var SRC= "\download.jpg";
 // Note: no background and layers mean NO IMAGE OBJECT for now - delete image object. Use var image.
 
-function ActionStack(){
-  this.stack = []
-  this.add = (action) => this.stack = action
-  this.cancel = () => this.stack.pop()
-  return this
-};
-
-
-function counter() {
-  let seconds = 0;
-
-  setInterval(() => {
-    seconds += 1;``
-    document.getElementById('timeCount').innerHTML = `<p>You have been here for ${seconds} seconds.</p>`;
-  }, 1000);
-}
-counter();
-
-
 function initUI (){
-  document.getElementById('file').innerHTML = `<input id="inputId" type="file">`;
-  document.getElementById('img').innerHTML = `<img src=${SRC} width=100;>`;
-  document.getElementById('canvas').innerHTML = `<canvas tabindex='1' id="canvasId" width="600" height="400" style="border:1px solid #d3d3d3;  background: #ABABAB;"> </canvas>`; // tabindex='1' to get element focusable
-  
-  var canvas = document.getElementById('canvasId');
-  var ctx = canvas.getContext('2d');
-  var inputElement = document.getElementById("inputId");
-  
-  inputElement.oninput = (e)=>{ 
-    SRC = inputElement.files[0].name;
-    document.getElementById('img').innerHTML = `<img id="imgPreviewId" src=${SRC}>`; 
-    var inputImage = new Image ()
-    inputImage.src = SRC 
-    console.log(inputImage)
-    console.log(ctx)
-    ctx.drawImage(inputImage, 10, 10, 256, 256);
-    console.log(ctx)  
-    console.log(ctx.drawImage)  
-  }
 
+  document.getElementById('inputImg').innerHTML = `Image URL: <input id="inputId" type="text">`;
+  document.getElementById('canvas').innerHTML = `W:<input id="canvasWidth" type=text> 
+  H:<input id="canvasHight" type=text>
+  <canvas 
+  	tabindex='1' 
+    id="canvasId" 
+    width="600" 
+    height="400" 
+    style="border:1px solid #d3d3d3;  
+    background: #ABABAB;"
+   ></canvas>`; // tabindex='1' to get element focusable
+  
+  var inputElement = document.getElementById("inputId");
+  var canvas = document.getElementById('canvasId');
+  var canvasW = document.getElementById('canvasWidth');
+  var canvasH = document.getElementById('canvasHight');
+  var ctx = canvas.getContext('2d');
+  
+  
   document.getElementById('toolBox').innerHTML = `
     <button class="nav__link" id="pencil">pencil</button><br>
-    <button class="nav__link" id="text">text</button><br>
-    <button class="nav__link" id="color">color</button><br>
+    <button class="nav__link" id="text">text</button><br> 
+    <input id="color" class="nav__link" type='color'><br>
     <button class="nav__link" id="undo">undo</button><br>
     <button class="nav__link" id="eraser">eraser</button><br>
     <button class="nav__link" id="rectangle">rectangle</button><br>
     <button class="nav__link" id="ellipse">ellipse</button><br>
     `;
-
+    
+	
   var toolPencil = document.getElementById('pencil');
   var toolText = document.getElementById('text');
   var toolColor = document.getElementById('color');
@@ -63,11 +44,33 @@ function initUI (){
   var toolRectangle = document.getElementById('rectangle');
   var toolEllipse = document.getElementById('ellipse');
   var toolText = document.getElementById('text');
+  
 
 
 // --- global tool chosen
 var chosenTool = "";
 // ----- tools object definition
+  var imageInput = (e)=>{ 
+    function validURL(str) {
+      var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+      return !!pattern.test(str);
+    }
+    let inputURL = inputElement.value
+    if (validURL(inputURL)){
+      var inputImage = new Image ()
+      inputImage.src = inputURL    
+      ctx.drawImage(inputImage, 10, 10, 256, 256);
+      /* //if input field is file*/
+      let SRC = inputElement.src
+      document.getElementById('img').innerHTML = `<img id="imgPreviewId" src=${SRC}>`; 
+    }	    
+  }
+
   var Pencil = function(){
     
     this.changeState = ()=>{
@@ -243,7 +246,6 @@ var chosenTool = "";
         pressPoint = [e.offsetX, e.offsetY];
 				ctx.fillText("", pressPoint[0], pressPoint[1]);
         charStack = "";
-        console.log(charStack);
       } 
 
       canvas.onmousemove =(e)=>{
@@ -265,9 +267,8 @@ var chosenTool = "";
         	// backspace realisation
         	charStack.pop();
           ctx.fillText(charStack, pressPoint[0], pressPoint[1]);
-          console.log("backspace")
         }
-        }
+      }
       
       canvas.removeEventListener( "keypress", doKeyPress, false);
       canvas.removeEventListener( "keydown", doKeyDown, false);
@@ -281,11 +282,15 @@ var chosenTool = "";
   	}
   }
   
-  function demountCanvas(){
-  	canvas.removeEventListener()
-  }
+// --------- color
+toolColor.addEventListener("input", (e)=>{console.log(e.srcElement)}, false);
+
+
+  
   
 // ---------
+  inputElement.addEventListener("blur", imageInput, false);
+
   let toolPencilInstance = new Pencil()
   toolPencil.onclick = (e) => {
     toolPencilInstance.changeState()
@@ -315,7 +320,6 @@ var chosenTool = "";
     toolTextInstance.changeState()
     toolTextInstance.mount()
   }
-  
   
 }
   
