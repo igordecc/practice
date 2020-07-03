@@ -7,10 +7,10 @@ canvas html picture.
 function ImageRedactor(customBuildSet){
   this.buildSet = {
     // important objects
-    rootElement:"envelope",
-    toolBox:true,
+    "rootElement":"envelope",
+    "toolBox":true,
     // canvas itself
-    canvas:true,
+    "canvas":true,
   };
 	// -- define builders
   this.elementPool = new Object();
@@ -39,6 +39,7 @@ function ImageRedactor(customBuildSet){
   this.canvasW = document.getElementById('canvasWidth');
   this.canvasH = document.getElementById('canvasHight');
   this.ctx = this.canvas.getContext('2d');
+  this.toolHTMLstack = "";
   };
 
 /* this.elementPool.inputImg = (e)=>{
@@ -55,70 +56,132 @@ function ImageRedactor(customBuildSet){
 
   
   if (!customBuildSet){
-    this.buildSetTools = {
-      // tools
-      bibi:true,
-      pencil:true,
-      inputImg:true,
-      eraser: true,
-      ellipse:true,
-      rectangle:true,
+    this.buildSetTools = { 
+      "pencil":true,
+      "undo":true,
+      "redo":true,
+      "inputImg":true,
+      "eraser": true,
+      "ellipse":true,
+      "rectangle":true,
+      "linew":true,
+      "color":true,
+      "text":true,
     }
   }else{
     this.buildSetTools = customBuildSet;
   };
+  // BUG - the lust element comes with addEventListeners
   // --- tools definition
-
-  this.elementPool.toolBox.bibi = ()=>{
-    // THiS FUNCTION DOESNOT addEventListener nomatter what FOR MISTERIOUS REASONs
-
-    // document.getElementById('toolBox').innerHTML += `<input class="nav__link" id="inputId" value="123" type="text"><br>`; 
-    // let input =  document.getElementById('inputId')
-    // console.log(input)
-    // console.log(input.oninput)
-    // input.addEventListener("input", (e)=>{console.log("eraser: "+e.target.value);})
-    // console.log(input.oninput)
-    // console.log()
-
-    // input.addEventListener(
-    //   "blur",
-    //   (e)=>{	
-    //     function validURL(str) {
-    //       var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-    //         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-    //         '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-    //         '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-    //         '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-    //         '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-    //       return !!pattern.test(str);
-    //     };
-    //     let inputURL = input.value
-    //     console.log("here")
-    //     if (validURL(inputURL)){
-    //       var inputImage = new Image ()
-    //       inputImage.src = inputURL    
-    //       this.ctx.drawImage(inputImage, 10, 10, 256, 256);
-    //      /*undoStack.push(getI());
-    //       redoStack = []; */
-    //     }	    
-    //   },
-    //   false
-    // ); 
-    
- 
+  
+  // TODO: replace this. by geElementById
+  // TODO: replace addEventListeners by direct addition to html 
+  
+  function addToolElements(customBuildSet){
+    let elements = {
+      inputImg : `<input class="nav__link" id="inputId" placeholder="img URL" type="text"><br>`,
+      pencil :  `<button class="nav__link" id="pencil">pencil</button><br>`,
+      text : `<button class="nav__link" id="text">text</button><br> `,
+      color : `<input  class="nav__link" id="color"  type='color'><br>`,
+      linew: `<input  class="nav__link" id="lineW" min=1 max=30 value=10 type='range'><input  class="nav__link" id="lineWValue" type='text' size="5"><br>`,
+      undo: `<button class="nav__link" id="undo">undo</button><br>`,
+      redo: `<button class="nav__link" id="redo">redo</button><br>`,
+      eraser: `<button class="nav__link" id="eraser">eraser</button><br>`,
+      rectangle: `<button class="nav__link" id="rectangle">rectangle</button><br>`,
+      ellipse: `<button class="nav__link" id="ellipse">ellipse</button><br>`,
+    }
+    let toolStack = "";
+    for (let key in elements){
+      if (key in customBuildSet){
+        toolStack += elements[key]
+      }
+    }
+    return toolStack
   };
-   
-  this.elementPool.toolBox.inputImg = ()=>{
-    document.getElementById('toolBox').innerHTML += `<input class="nav__link" id="inputId" value="123" type="text"><br>`; 
-    let input =  document.getElementById('inputId')
-    console.log(input)
-    console.log(input.oninput)
-    input.addEventListener("input", (e)=>{console.log("eraser: "+e.target.value);})
-    console.log(input.oninput)
-    console.log()
 
+  this.toolHTMLstack = addToolElements(this.buildSetTools)
+
+  document.getElementById('toolBox').innerHTML = this.toolHTMLstack;
+   
+  // get image data with canvas dimentions  
+  var getI = (e)=>{return this.ctx.getImageData(0,0,this.canvas.width, this.canvas.height)}
+
+  // --- undo
+  var redoStack = []
+  var undoStack = [getI(),]
+  
+  let undoFunc = 	(e)=>{
+    if (undoStack.length>1) {redoStack.push(undoStack.pop())};
+    this.ctx.putImageData(undoStack[undoStack.length-1], 0,0,0,0,this.canvas.width, this.canvas.height);      
+    };
+  
+  // --- redo
+  let redoFunc = (e)=>{
+  if (redoStack.length>0){
+    this.ctx.putImageData(
+      redoStack[redoStack.length-1], 
+      0,
+      0,
+      0,
+      0,
+      this.canvas.width, 
+      this.canvas.height
+      );
+    undoStack.push(redoStack.pop());
+    }
+  }; 
+  
+  // undo redo super useful 
+  // cause to negate performance issues and always boot undoredo stacks and hotkeys 
+  var undoKeys = (e)=>{return (e.ctrlKey && !e.shiftKey &&e.code ==="KeyZ") }
+  var redoKeys = (e)=>{return ((e.ctrlKey && e.shiftKey && e.code ==="KeyZ")||(e.ctrlKey && e.code ==="KeyY")||(e.ctrlKey && e.shiftKey && e.code ==="KeyY"))}
+  window.addEventListener("keydown", (e)=>{if (e.ctrlKey && !e.shiftKey &&e.code ==="KeyZ"){undoFunc(e)}}, false);
+  window.addEventListener("keydown", (e)=>{if ((e.ctrlKey && e.shiftKey && e.code ==="KeyZ")||(e.ctrlKey && e.code ==="KeyY")||(e.ctrlKey && e.shiftKey && e.code ==="KeyY")) {redoFunc(e)}}, false);
+  
+  this.elementPool.toolBox.undo = ()=>{
+    this.toolUndo = document.getElementById("undo");
+    this.toolUndo.addEventListener("click", undoFunc, false);
+  }
+  
+  this.elementPool.toolBox.redo = ()=>{
+    this.toolRedo = document.getElementById("redo");
+    this.toolRedo.addEventListener("click", redoFunc, false);
+  }
+  
+  this.elementPool.toolBox.linew = (e)=>{
+    // --- line width
+    let toolLineW = document.getElementById('lineW');
+    let toolLineWValue = document.getElementById('lineWValue');
+    console.log(toolLineW.value)
+    this.ctx.lineWidth = toolLineW.value;
+    toolLineWValue.value = toolLineW.value;
+    toolLineW.addEventListener(
+      "input", 
+      (e)=>{
+          this.ctx.lineWidth = toolLineW.value; 
+          toolLineWValue.value = toolLineW.value;
+        }, 
+      false
+    )
+  }
+
+  this.elementPool.toolBox.color = (e)=>{
+      // --- color 
+      let toolColor = document.getElementById('color');
+      this.ctx.fillStyle = toolColor.value; 
+      this.ctx.strokeStyle = toolColor.value;
+      toolColor.addEventListener("change", 
+        (e)=>{
+        this.ctx.fillStyle = toolColor.value; 
+        this.ctx.strokeStyle = toolColor.value;
+        }, 
+      false);
+  }
+  
+  this.elementPool.toolBox.inputImg = ()=>{
+    let input =  document.getElementById('inputId')
     input.addEventListener(
-      "blur",
+      "blur", 
       (e)=>{	
         function validURL(str) {
           var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
@@ -129,249 +192,212 @@ function ImageRedactor(customBuildSet){
             '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
           return !!pattern.test(str);
         };
-        let inputURL = input.value
-        console.log("here")
+        let inputURL = input.value      
         if (validURL(inputURL)){
           var inputImage = new Image ()
-          inputImage.src = inputURL    
+          inputImage.src = inputURL   
           this.ctx.drawImage(inputImage, 10, 10, 256, 256);
-         /*undoStack.push(getI());
-          redoStack = []; */
+          undoStack.push(getI());
+          redoStack = []; 
         }	    
       },
-      false
-    ); 
+      false 
+    )
   };
   
   this.elementPool.toolBox.pencil = (e)=>{
-  	document.getElementById('toolBox').innerHTML += `<button class="nav__link" id="pencil">pencil</button><br>`
     this.pencil = document.getElementById('pencil');
-
-    
-  this.pencil.addEventListener(
-  "click",  
-  (e) => {
-    this.chosenTool = "pencil";// change state
-		// --- mount
-    // add Event listener
-    let drawState = "0";
-    let pressPoint = [0,0]
-    this.canvas.onmousedown = (e)=>{
-      drawState = "1";
-      pressPoint = [e.offsetX, e.offsetY];
-    }
-
-    this.canvas.onmousemove =(e)=>{
-      this.ctx.beginPath();
-      this.ctx.lineCap = "round";
-      this.ctx.moveTo(pressPoint[0], pressPoint[1])
-      this.ctx.lineTo(e.offsetX, e.offsetY);
-      pressPoint = [e.offsetX, e.offsetY];
-      if (drawState == "1" ) {
-        this.ctx.fill();
-        this.ctx.stroke();
-      } 
-    };
-
-    this.canvas.onmouseup = (e) => {
-      drawState = "0";/* 
-        this.undoStack.push(getI());
-        this.redoStack = []; */
-    }
-  }, 
-  false
-  );
- 
-  };
-  
-  
-  
-  
-	// --- tools render
-    for (let key in this.buildSetTools){    
-    if (this.buildSetTools[key] && this.elementPool.toolBox[key]){
-      this.elementPool.toolBox[key](this.buildSetTools[key]);
-    }
-  // ---
-  };
-};
-  
-let imageRExemplar = new ImageRedactor();
-
-/*   
-  var inputElement = document.getElementById("inputId");
-  var canvas = document.getElementById('canvasId');
-  var canvasW = document.getElementById('canvasWidth');
-  var canvasH = document.getElementById('canvasHight');
-  var ctx = canvas.getContext('2d');
-  
-  
-  document.getElementById('toolBox').innerHTML = `
-    <button class="nav__link" id="text">text</button><br> 
-    <input  class="nav__link" id="color"  type='color'><br>
-    <input  class="nav__link" id="lineW" min=1 max=30 value=10 type='range'>
-    <input  class="nav__link" id="lineWValue" type='text' size="5"><br>
-    <button class="nav__link" id="undo">undo</button><br>
-    <button class="nav__link" id="redo">redo</button><br>
-    <button class="nav__link" id="eraser">eraser</button><br>
-    <button class="nav__link" id="rectangle">rectangle</button><br>
-    <button class="nav__link" id="ellipse">ellipse</button><br>
-    `;
-    
-  // TODO: canvas.tool that returns element and autobind event on this element
-    
-  var toolText = document.getElementById('text');
-  var toolColor = document.getElementById('color');
-  var toolLineW = document.getElementById('lineW'); var toolLineWValue = document.getElementById('lineWValue');
-  var toolUndo = document.getElementById('undo');
-  var toolRedo = document.getElementById('redo');
-  var toolEraser = document.getElementById('eraser');
-  var toolRectangle = document.getElementById('rectangle');
-  var toolEllipse = document.getElementById('ellipse');
-  var toolText = document.getElementById('text');
-  
-  // get image data with canvas dimentions  
-  let getI = (e)=>{return ctx.getImageData(0,0,canvas.width, canvas.height)}
-  // --- undo
-  let redoStack = []
-  let undoStack = [getI(),]
-  let undoFunc = 	(e)=>{
-    if (undoStack.length>1) {redoStack.push(undoStack.pop())};
-    ctx.putImageData(undoStack[undoStack.length-1], 0,0,0,0,canvas.width, canvas.height);      
-    };
-  toolUndo.addEventListener("click", undoFunc, false);
-  window.addEventListener("keydown", (e)=>{if (e.ctrlKey && !e.shiftKey &&e.code ==="KeyZ"){undoFunc(e)}}, false);
-  // --- redo
-     let redoFunc = (e)=>{
-    if (redoStack.length>0){
-      ctx.putImageData(
-        redoStack[redoStack.length-1], 
-        0,
-        0,
-        0,
-        0,
-        canvas.width, 
-        canvas.height
-        );
-      undoStack.push(redoStack.pop());
+    this.pencil.addEventListener(
+    "click",  
+    (e) => {
+      this.chosenTool = "pencil";// change state
+      // --- mount
+      // add Event listener
+      let drawState = "0";
+      let pressPoint = [0,0]
+      this.canvas.onmousedown = (e)=>{
+        drawState = "1";
+        pressPoint = [e.offsetX, e.offsetY];
       }
-    }; 
-  toolRedo.addEventListener("click", redoFunc, false);
-  window.addEventListener("keydown", (e)=>{if ((e.ctrlKey && e.shiftKey && e.code ==="KeyZ")||(e.ctrlKey && e.code ==="KeyY")||(e.ctrlKey && e.shiftKey && e.code ==="KeyY")) {redoFunc(e)}}, false)
-  // --- line width
-  ctx.lineWidth = toolLineW.value;
-  toolLineWValue.value = toolLineW.value;
-  toolLineW.addEventListener("input", 
-    (e)=>{
-      ctx.lineWidth = toolLineW.value; 
-    toolLineWValue.value = toolLineW.value;
-    }, 
-    false)
-  // --- color 
-  ctx.fillStyle = toolColor.value; 
-  ctx.strokeStyle = toolColor.value;
-  toolColor.addEventListener("blur", 
-    (e)=>{
-    ctx.fillStyle = toolColor.value; 
-    ctx.strokeStyle = toolColor.value;
-    }, 
-  false);
-   
-  
-  // --- global tool chosen
-  var chosenTool = "";
-  // ----- tools object definition
 
+      this.canvas.onmousemove =(e)=>{
+        this.ctx.beginPath();
+        this.ctx.lineCap = "round";
+        this.ctx.moveTo(pressPoint[0], pressPoint[1])
+        this.ctx.lineTo(e.offsetX, e.offsetY);
+        pressPoint = [e.offsetX, e.offsetY];
+        if (drawState == "1" ) {
+          this.ctx.fill();
+          this.ctx.stroke();
+        } 
+      };
+
+      this.canvas.onmouseup = (e) => {
+        drawState = "0";
+        undoStack.push(getI());
+        redoStack = [];
+      }
+    }, 
+    false
+    );
+  };
   
- 
-  var Rectangle = function() {
-  
-    this.changeState = ()=>{
-      chosenTool = "rectangle"; 
-    }
-    
-    this.mount = ()=>{
+  this.elementPool.toolBox.eraser = (e)=>{
+    document.getElementById('eraser').addEventListener("click", (e)=>{
+      let pressPoint = [0,0];
+      let size = [50,50];
+      var drawState = "0"
+      
+      this.canvas.onmousedown = (e)=>{
+        drawState = "1"
+        pressPoint = [e.offsetX, e.offsetY];
+        this.ctx.clearRect(e.offsetX, e.offsetY, size[0], size[1])
+      }
+
+      this.canvas.onmousemove =(e)=>{
+        if (drawState=="1"){
+          this.ctx.clearRect(e.offsetX, e.offsetY, size[0], size[1])
+        };
+      };
+
+      this.canvas.onmouseup = (e) => {
+      drawState = "0";
+      undoStack.push(getI());
+      redoStack = [];
+      }; 
+    }) 
+  };
+
+  this.elementPool.toolBox.rectangle = (e)=>{
+    document.getElementById('rectangle').addEventListener("click", (e)=>{
+
       // add Event lister
       let drawState = "0";
       let pressPoint = [0,0]
-  
-      canvas.onmousedown = (e)=>{
+      
+      this.canvas.onmousedown = (e)=>{
         drawState = "1";
         pressPoint = [e.offsetX, e.offsetY,1,1];
       } 
   
-      canvas.onmousemove =(e)=>{
+      this.canvas.onmousemove =(e)=>{
         // TODO: create move animation
       };
   
-      canvas.onmouseup = (e) => {
+      this.canvas.onmouseup = (e) => {
         if (drawState == "1" ) {
-          ctx.beginPath();
-          ctx.rect(pressPoint[0], pressPoint[1], e.offsetX-pressPoint[0], e.offsetY-pressPoint[1]);
-          ctx.stroke();
+          this.ctx.beginPath();
+          this.ctx.rect(pressPoint[0], pressPoint[1], e.offsetX-pressPoint[0], e.offsetY-pressPoint[1]);
+          this.ctx.stroke();
         }
         drawState = "0";
         undoStack.push(getI()); 
         redoStack = [];
-      }
-      
-     }
-  };
-  
-  var Eraser = function() {
-  // TODO make centered on cursor
-    this.changeState = ()=>{
-        chosenTool = "eraser"; 
-    }
-    
-    this.mount = ()=>{
-      // add Event listener
-      let pressPoint = [0,0];
-      let size = [50,50];
-      var drawState = "0"
-  
-      canvas.onmousedown = (e)=>{
-        drawState = "1"
-        pressPoint = [e.offsetX, e.offsetY];
-        ctx.clearRect(e.offsetX, e.offsetY, size[0], size[1])
-      }
-  
-      canvas.onmousemove =(e)=>{
-        if (drawState=="1"){
-          ctx.clearRect(e.offsetX, e.offsetY, size[0], size[1])
-        };
       };
-  
-      canvas.onmouseup = (e) => {
-      drawState = "0";
-      undoStack.push(getI());
-      redoStack = [];
-      }
-    }
-  }
-   
-  var Ellipse = function () {
-    
-    this.changeState = ()=>{
-     chosenTool = "elipse";
-    }
-    
-    this.mount = ()=>{
+    }) 
+  };
+
+  this.elementPool.toolBox.text = (e)=>{
+    let textTool = document.getElementById('text');
+    textTool.addEventListener("click", (e)=>{
+      
       let drawState = "0";
       let pressPoint = [0,0];
       
-      canvas.onmousedown = (e)=>{
+      this.ctx.font = "30px Arial";
+      
+      let charStack = "";
+      let imageStack = [getI(),];
+      let imageOrigin = getI()
+
+      let saveText =(e)=>{
+        console.log("enter")
+        // enter realisation
+        this.ctx.putImageData(getI(), 0,0,0,0,this.canvas.width, this.canvas.height);
+        charStack = "";
+        imageStack = [getI(),];
+        imageOrigin = getI()
+      }
+      
+      this.canvas.onmousedown = (e)=>{
+        charStack = "";
+        imageStack = [getI(),]; // for undo chars on animation
+  
+        drawState = "1";
+        pressPoint = [e.offsetX, e.offsetY];
+        this.ctx.fillText("", pressPoint[0], pressPoint[1]);
+
+        // global undo redo -- buggi
+        saveText()
+        undoStack.push(getI());
+        redoStack = [];
+      } 
+
+      this.canvas.addEventListener( "keypress", (e)=>{
+        if ((e.target == this.canvas)&&(drawState==="1")&&(drawState==="1")&&(!undoKeys(e)&&(!redoKeys(e)))) {
+          // to understand and remember char in 'charStack'
+          e = e || window.event;
+          let charCode = e.which || e.keyCode || e.charCode;
+          let pressedChar = String.fromCharCode(charCode);     
+          if ((e.keyCode !== 13)&&(e.keyCode!==8)){
+            charStack += pressedChar;    
+
+            // animate func
+          this.ctx.putImageData(imageOrigin, 0,0,0,0,this.canvas.width, this.canvas.height);
+          this.ctx.fillText(charStack, pressPoint[0], pressPoint[1]);
+          imageStack.push(getI());
+          }  
+             
+        }
+      });
+
+      this.canvas.addEventListener( "keydown", (e)=>{
+        // backspace realisation
+        // TODO: need internal undo stack  
+
+        let x = e.keyCode.toString()
+        console.log(x)
+        switch (x){ 
+          case "8":
+            console.log("backspace")    
+            charStack = charStack.slice(0, charStack.length-1)
+            if (imageStack.length>1){
+              imageStack.pop();
+              this.ctx.putImageData(imageOrigin, 0,0,0,0,this.canvas.width, this.canvas.height);
+              this.ctx.fillText(charStack, pressPoint[0], pressPoint[1]);   
+            }
+            break;
+          case "13":
+            saveText()
+            break;
+    
+        }
+      });
+   
+      
+    })
+
+
+  }
+
+  this.elementPool.toolBox.ellipse = (e)=>{
+    document.getElementById('ellipse').addEventListener("click", (e)=>{
+
+      let drawState = "0";
+      let pressPoint = [0,0];
+      
+      this.canvas.onmousedown = (e)=>{
         drawState = "1";
         pressPoint = [e.offsetX, e.offsetY,1,1];
       } 
   
-      canvas.onmousemove =(e)=>{
+      this.canvas.onmousemove =(e)=>{
         // TODO: create move animation
       };
   
-      canvas.onmouseup = (e) => {
+      this.canvas.onmouseup = (e) => {
         if (drawState === "1" ) {
-          ctx.beginPath();
+          this.ctx.beginPath();
           let yhalf = 0
           if (e.offsetY>pressPoint[1]) {
             yhalf = e.offsetY-Math.abs(pressPoint[1]-e.offsetY)/2
@@ -380,105 +406,29 @@ let imageRExemplar = new ImageRedactor();
             yhalf = e.offsetY+Math.abs(pressPoint[1]-e.offsetY)/2
           }
           
-        ctx.moveTo(pressPoint[0],  yhalf);
-        ctx.bezierCurveTo(pressPoint[0], e.offsetY, e.offsetX, e.offsetY, e.offsetX, yhalf);
-        ctx.moveTo(pressPoint[0],  yhalf);
-        ctx.bezierCurveTo(pressPoint[0], pressPoint[1], e.offsetX, pressPoint[1], e.offsetX, yhalf);    
-        ctx.stroke();
+        this.ctx.moveTo(pressPoint[0],  yhalf);
+        this.ctx.bezierCurveTo(pressPoint[0], e.offsetY, e.offsetX, e.offsetY, e.offsetX, yhalf);
+        this.ctx.moveTo(pressPoint[0],  yhalf);
+        this.ctx.bezierCurveTo(pressPoint[0], pressPoint[1], e.offsetX, pressPoint[1], e.offsetX, yhalf);    
+        this.ctx.stroke();
         }
         drawState = "0";
         undoStack.push(getI());
         redoStack = [];
       }
-    }
-    
-  }
-  
-  var Text = function () {
-    
-    this.changeState = ()=>{
-      chosenTool = "text";
-    }
-    
-    this.mount = ()=>{
-      let drawState = "0";
-      let pressPoint = [0,0];
-      let lastDownTarget;
-      ctx.font = "30px Arial";
-      let charStack = "";
-      
-      
-      
-      canvas.onmousedown = (e)=>{
-        lastDownTarget = e.target;
-        drawState = "1";
-        pressPoint = [e.offsetX, e.offsetY];
-          ctx.fillText("", pressPoint[0], pressPoint[1]);
-        charStack = "";
-      } 
-  
-      canvas.onmousemove =(e)=>{
-        // TODO: create move animation
-      };
-      
-      let doKeyPress = (e)=>{
-        if ((lastDownTarget == canvas)&&(drawState==="1")&&(drawState==="1")) {
-          e = e || window.event;
-          let charCode = e.which || e.keyCode || e.charCode;
-          let pressedChar = String.fromCharCode(charCode)          
-          charStack += pressedChar;  
-          ctx.fillText(charStack, pressPoint[0], pressPoint[1]);
-        }
-      }
-      
-      let doKeyDown = (e)=>{
-        if (e.keyCode==="8"){
-          // backspace realisation
-          charStack.pop();
-          ctx.fillText(charStack, pressPoint[0], pressPoint[1]);
-        }
-      }
-      
-      canvas.removeEventListener( "keypress", doKeyPress, false);
-      canvas.removeEventListener( "keydown", doKeyDown, false);
-      
-      canvas.addEventListener( "keypress", doKeyPress, false);
-      
-      canvas.addEventListener( "keydown", doKeyDown, false);
-   
-      canvas.onmouseup = (e) => {
-      undoStack.push(getI());
-      redoStack = [];
-      }
-    }
-  }
-  
-  // ---------
-  inputElement.addEventListener("blur", imageInput, false);
-  
+    }) 
+  };
 
+	// --- tools render
+    for (let key in this.buildSetTools){    
+    
+    if (this.buildSetTools[key] && this.elementPool.toolBox[key]){
+      console.log(key)
+      this.elementPool.toolBox[key](this.buildSetTools[key]);
+    }
+  // ---
+  };
+};
   
-  let toolRectangleInstance = new Rectangle()
-  toolRectangle.onclick = (e) => {
-    toolRectangleInstance.changeState()
-    toolRectangleInstance.mount()
-  }
-  
-  let toolEraserInstance = new Eraser()
-  toolEraser.onclick = (e) => {
-    toolEraserInstance.changeState()
-    toolEraserInstance.mount()
-  }
-  
-   let toolEllipseInstance = new Ellipse()
-  toolEllipse.onclick = (e) => {
-    toolEllipseInstance.changeState()
-    toolEllipseInstance.mount()
-  }
-  
-  let toolTextInstance = new Text()
-  toolText.onclick = (e) => {
-    toolTextInstance.changeState()
-    toolTextInstance.mount()
-  }
-   */
+let imageRExemplar = new ImageRedactor();
+
