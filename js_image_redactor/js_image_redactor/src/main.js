@@ -76,7 +76,6 @@ function ImageRedactor(customBuildSet){
   
   // TODO: replace this. by geElementById
   // TODO: replace addEventListeners by direct addition to html 
-  
   function addToolElements(customBuildSet){
     let elements = {
       inputImg : `<input class="nav__link" id="inputId" placeholder="img URL" type="text"><br>`,
@@ -183,23 +182,24 @@ function ImageRedactor(customBuildSet){
     input.addEventListener(
       "blur", 
       (e)=>{	
-        function validURL(str) {
-          var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-            '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-          return !!pattern.test(str);
-        };
-        let inputURL = input.value      
-        if (validURL(inputURL)){
-          var inputImage = new Image ()
-          inputImage.src = inputURL   
-          this.ctx.drawImage(inputImage, 10, 10, 256, 256);
-          undoStack.push(getI());
-          redoStack = []; 
-        }	    
+        let inputURL = input.value;      
+        let img = new Image();
+        img.src = inputURL;
+        console.log("ok")
+        img.decode().then(
+        this.ctx.drawImage(img, 10, 10, 256, 256))
+        try{
+          
+          
+        }
+        catch(error){
+          console.log(error.message);
+        }
+        
+        // document.getElementById("imgPreview").src = inputURL
+
+        // let img = document.getElementById("imgPreview")
+           
       },
       false 
     )
