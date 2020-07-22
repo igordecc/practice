@@ -1,0 +1,10 @@
+div {
+    position: relative;
+    text-align:center;
+}
+
+.center {
+    position:relative;
+    color: red;
+    margin:auto;
+}
