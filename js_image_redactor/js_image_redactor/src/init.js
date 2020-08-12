@@ -6,7 +6,10 @@ canvas html picture.
 
 import {elementFactories} from './objects.js';
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/master
 function ImageRedactor(customBuildSet){
 
     this.buildSet = {
