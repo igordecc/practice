@@ -4,7 +4,8 @@ canvas html picture.
 'use strict';
 // Note: no background and layers mean NO IMAGE OBJECT for now - delete image object. Use var image.
 
-import {elementFactories} from './elements.js';
+import {elementFactories} from './objects.js';
+
 
 function ImageRedactor(customBuildSet){
 
