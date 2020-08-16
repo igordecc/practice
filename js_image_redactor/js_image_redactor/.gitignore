@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+# Images
+*.png
+*.jpg
+*.jpeg
+*.bmp
+
+=======
+>>>>>>> refs/remotes/origin/master
 # Logs
 logs
 *.log

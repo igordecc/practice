@@ -1,0 +1,6 @@
+s = bin(123)
+_is = int(s, 2)
+bis = bin(int(s, 2))
+print(s)
+print(_is)
+print(bis)
