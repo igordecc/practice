@@ -1,0 +1,20 @@
+
+
+SELECT column1, column2 FROM table_name;
+SELECT DISTINCT column1, column2 FROM table_name;  /* select only distinct (different) values */
+SELECT DISTINCT column1, city FROM table_name WHERE city="New York";
+SELECT DISTINCT column1, name, city FROM table_name WHERE citi="New York" AND name="Mary";
+SELECT DISTINCT column1 FROM table_name WHERE column1 > 1234 LIMIT 20;
+SELECT DISTINCT TOP 20 column1 FROM table_name;
+SELECT DISTINCT column1 FROM table_name WHERE ROWNUM <= 20;
+SELECT MIN(id) FROM table_name;
+SELECT MAX(id) FROM table_name;
+SELECT COUNT(id), city FROM table_name WHERE city="New York";
+SELECT AVG(id) FROM table_name;
+SELECT SUM(id) FROM table_name WHERE id BETWEEN 10 and 1000;
+SELECT id, city FROM table_name WHERE city IN ("Illinois", "New York", "Minnesota")
+SELECT id, city FROM table_name ORDER BY city ASC; /*ASC - Ascending order*/
+
+INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
+VALUES ('Cardinal', 'Tom B. Erichsen', 'Skagen 21', 'Stavanger', '4006', 'Norway');
+
